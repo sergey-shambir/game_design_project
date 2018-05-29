@@ -55,4 +55,5 @@ target_wrapper.*
 CMakeLists.txt.user*
 
 # Cocos2d-x specific
-cocos2d
+cocos2d/
+Design/

@@ -122,6 +122,7 @@ cocos_build_app(${APP_NAME}
                 DEPEND_COMMON_LIBS "cocos2d"
                 DEPEND_ANDROID_LIBS "cocos2d_android"
                 )
+target_compile_features(${APP_NAME} PUBLIC cxx_std_17)
 
 if(APPLE)
     set_target_properties(${APP_NAME} PROPERTIES RESOURCE "${APP_UI_RES}")
