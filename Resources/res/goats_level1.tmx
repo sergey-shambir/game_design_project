@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="45" height="30" tilewidth="16" tileheight="16" nextobjectid="40">
+ <tileset firstgid="1" name="grass-tiles" tilewidth="16" tileheight="16" tilecount="48" columns="12">
+  <image source="grass-tiles.png" width="192" height="64"/>
+ </tileset>
+ <tileset firstgid="49" name="sprites" tilewidth="64" tileheight="64" tilecount="2" columns="0">
+  <tile id="0">
+   <image width="64" height="64" source="objects/goat_left.png"/>
+  </tile>
+  <tile id="1">
+   <image width="32" height="40" source="objects/plant_40.png"/>
+  </tile>
+ </tileset>
+ <layer name="ground_tiles" width="45" height="30">
+  <data encoding="base64" compression="zlib">
+   eJztmGsLgjAYhWeQZjcou0FfMuhK9v9/XkfyhSVTN91eJ/ThcECStmePwxkIIUZIMKBeIEuNpnt0f++ybXN4IE8mznRthswrODetywlJkTNyZOS8Rw6l6/I86ub/QjLkjdwYONc1zaNvj1357NO+4aqrnh8uzvT/Jvepnh9Ozlze++Dn0Hxu4z2Xt11b9t5nb/8+d2tya0icyS2XnLtysc2fg4tt/n3vuzZ8pvXxYX/Q5Uzr4wPP/Jx2Qa6l9oGbqtdIhMTIVOoJIzfT9+SsGOMW2Um9YeRm+p6cFmMcI2ExVhq3D96qOh9ngqzE15PcCfKjb2+r+l6wjUrjjQ3m3eRjm3NdXdN3h0T8ehEbzLvJxzbnOp0OFaz79laHd5n1B76cLRs=
+  </data>
+ </layer>
+ <objectgroup name="units">
+  <object id="18" name="goat" type="goat" gid="2147483697" x="78.4503" y="114.838" width="64" height="64">
+   <properties>
+    <property name="flipX" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="21" name="goat" type="goat" gid="2147483697" x="52.9618" y="187.839" width="64" height="64">
+   <properties>
+    <property name="flipX" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="22" name="goat" type="goat" gid="2147483697" x="4.10875" y="262.18" width="64" height="64">
+   <properties>
+    <property name="flipX" type="bool" value="true"/>
+   </properties>
+  </object>
+  <object id="23" name="plant" type="plant" gid="50" x="212.335" y="123.016" width="32" height="40"/>
+  <object id="26" name="plant" type="plant" gid="50" x="294.11" y="123.373" width="32" height="40"/>
+  <object id="27" name="plant" type="plant" gid="50" x="389.692" y="181.784" width="32" height="40"/>
+  <object id="28" name="plant" type="plant" gid="50" x="471.468" y="80.8921" width="32" height="40"/>
+  <object id="29" name="plant" type="plant" gid="50" x="208.087" y="263.56" width="32" height="40"/>
+  <object id="30" name="plant" type="plant" gid="50" x="461.91" y="303.917" width="32" height="40"/>
+  <object id="31" name="plant" type="plant" gid="50" x="337.653" y="343.212" width="32" height="40"/>
+  <object id="32" name="plant" type="plant" gid="50" x="623.337" y="229.575" width="32" height="40"/>
+  <object id="33" name="plant" type="plant" gid="50" x="574.484" y="97.8845" width="32" height="40"/>
+  <object id="34" name="plant" type="plant" gid="50" x="83.8301" y="437.732" width="32" height="40"/>
+  <object id="35" name="plant" type="plant" gid="50" x="212.335" y="361.266" width="32" height="40"/>
+  <object id="36" name="plant" type="plant" gid="50" x="547.934" y="465.344" width="32" height="40"/>
+  <object id="37" name="plant" type="plant" gid="50" x="305.793" y="448.352" width="32" height="40"/>
+  <object id="38" name="plant" type="plant" gid="50" x="570.236" y="310.289" width="32" height="40"/>
+  <object id="39" name="plant" type="plant" gid="50" x="499.783" y="196.373" width="32" height="40"/>
+ </objectgroup>
+</map>
