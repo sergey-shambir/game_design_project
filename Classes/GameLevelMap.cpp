@@ -11,6 +11,8 @@ const char kPropertyType[] = "type";
 const char kPropertyFlipX[] = "flipX";
 const char kTypeGoat[] = "goat";
 const char kTypePlant[] = "plant";
+const float kGoatIdleSecondsMin = 1.5f;
+const float kGoatIdleSecondsMax = 7.0f;
 
 void dumpValueMapKeys(const ValueMap &map)
 {
@@ -72,8 +74,12 @@ void GameLevelMap::initWithTMXFile(const std::string &tmxFile)
 	{
 		throw std::runtime_error("cannot parse map from " + tmxFile);
 	}
+
 	const float scaleFactor = Director::getInstance()->getContentScaleFactor();
 	TMXTiledMap::setScale(scaleFactor);
+
+	std::random_device device;
+	m_random.seed(device());
 
 	loadUnits();
 }
@@ -87,12 +93,14 @@ void GameLevelMap::loadUnits()
 		const std::string objectType = properties.at(kPropertyType).asString();
 		if (objectType == kTypeGoat)
 		{
-			auto sprite = spawnObjectSprite("goat_4.png", properties);
+			auto sprite = spawnGoat(properties);
+			m_goats.pushBack(sprite);
 			this->addChild(sprite);
 		}
 		else if (objectType == kTypePlant)
 		{
-			auto sprite = spawnObjectSprite("plant_31.png", properties);
+			auto sprite = spawnObjectSprite("plant_bush_ripe.png", properties);
+			m_plants.pushBack(sprite);
 			this->addChild(sprite);
 		}
 	}
@@ -106,6 +114,43 @@ TMXObjectGroup *GameLevelMap::getObjectGroupOrThrow(const std::string &name)
 		throw std::runtime_error("can't find layer '" + name + "' on map");
 	}
 	return group;
+}
+
+cocos2d::RefPtr<Sprite> GameLevelMap::spawnGoat(const ValueMap &properties)
+{
+	auto sprite = spawnObjectSprite("goat_idle.png", properties);
+	Rect spriteRect = sprite->getTextureRect();
+
+	SpriteFrameCache *cache = SpriteFrameCache::getInstance();
+	SpriteFrame *frame1 = cache->getSpriteFrameByName("goat_idle.png");
+	SpriteFrame *frame2 = cache->getSpriteFrameByName("goat_eat1.png");
+	SpriteFrame *frame3 = cache->getSpriteFrameByName("goat_eat2.png");
+	SpriteFrame *frame4 = cache->getSpriteFrameByName("goat_eat3.png");
+	Vector<SpriteFrame *> frames = {
+		frame1, frame2, frame3, frame4, frame3, frame4, frame3, frame4, frame3, frame2, frame1
+	};
+
+	Animate *animate = Animate::create(Animation::createWithSpriteFrames(frames, 0.1f));
+	assert(animate);
+
+	DelayTime *delay = DelayTime::create(getRandomFloat(kGoatIdleSecondsMin, kGoatIdleSecondsMax));
+	sprite->runAction(RepeatForever::create(Sequence::createWithTwoActions(delay, animate)));
+
+	return sprite;
+}
+
+RefPtr<Sprite> GameLevelMap::spawnObjectSprite(const std::string &frameName, const ValueMap &properties) const
+{
+	const Rect spriteRect = getObjectRect(properties);
+	RefPtr<Sprite> sprite = Sprite::createWithSpriteFrameName(frameName);
+	if (!sprite)
+	{
+		throw std::runtime_error("cannot load sprite \""s + frameName + "\""s);
+	}
+	sprite->setPosition(spriteRect.origin + 0.5f * Vec2{ spriteRect.size });
+	sprite->setAnchorPoint(Vec2{ 0.5f, 0.5f });
+
+	return sprite;
 }
 
 Rect GameLevelMap::getObjectRect(const ValueMap &properties) const
@@ -129,19 +174,8 @@ bool GameLevelMap::getOptionalBool(const ValueMap &properties, const std::string
 	return false;
 }
 
-RefPtr<Sprite> GameLevelMap::spawnObjectSprite(const std::string &frameName, const ValueMap &properties) const
+float GameLevelMap::getRandomFloat(float from, float to) const
 {
-	const Rect spriteRect = getObjectRect(properties);
-	const bool flipX = getOptionalBool(properties, kPropertyFlipX);
-
-	RefPtr<Sprite> sprite = Sprite::createWithSpriteFrameName(frameName);
-	if (!sprite)
-	{
-		throw std::runtime_error("cannot load sprite \""s + frameName + "\""s);
-	}
-	sprite->setFlippedX(flipX);
-	sprite->setPosition(spriteRect.origin);
-	sprite->setAnchorPoint(Vec2{ 0.0f, 0.0f });
-
-	return sprite;
+	std::uniform_real_distribution<float> distribution{ from, to };
+	return distribution(m_random);
 }
