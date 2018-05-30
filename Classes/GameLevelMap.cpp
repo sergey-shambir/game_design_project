@@ -1,13 +1,16 @@
 #include "GameLevelMap.h"
 
 using namespace cocos2d;
+using namespace std::literals;
 
 namespace
 {
-const char groundLayerName[] = "ground_tiles";
-const char unitsLayerName[] = "units";
-const char goatObjectType[] = "goat";
-const char plantObjectType[] = "plant";
+const char kLayerNameGround[] = "ground_tiles";
+const char kLayerNameUnits[] = "units";
+const char kPropertyType[] = "type";
+const char kPropertyFlipX[] = "flipX";
+const char kTypeGoat[] = "goat";
+const char kTypePlant[] = "plant";
 
 void dumpValueMapKeys(const ValueMap &map)
 {
@@ -21,6 +24,8 @@ void dumpValueMapKeys(const ValueMap &map)
 		keysStr += pair.first;
 		switch (pair.second.getType())
 		{
+		default:
+			break;
 		case Value::Type::BOOLEAN:
 			keysStr += pair.second.asBool() ? ": true" : ": false";
 			break;
@@ -75,17 +80,20 @@ void GameLevelMap::initWithTMXFile(const std::string &tmxFile)
 
 void GameLevelMap::loadUnits()
 {
-	TMXObjectGroup *group = getObjectGroupOrThrow(unitsLayerName);
-	dumpValueMapKeys(group->getProperties());
+	TMXObjectGroup *group = getObjectGroupOrThrow(kLayerNameUnits);
 	for (Value object : group->getObjects())
 	{
-		ValueMap props = object.asValueMap();
-		dumpValueMapKeys(props);
-		Value gidPropsValue = getPropertiesForGID(props.at("gid").asInt());
-		if (gidPropsValue.getType() != Value::Type::NONE)
+		ValueMap properties = object.asValueMap();
+		const std::string objectType = properties.at(kPropertyType).asString();
+		if (objectType == kTypeGoat)
 		{
-			ValueMap gidProps = gidPropsValue.asValueMap();
-			dumpValueMapKeys(gidProps);
+			auto sprite = spawnObjectSprite("goat_4.png", properties);
+			this->addChild(sprite);
+		}
+		else if (objectType == kTypePlant)
+		{
+			auto sprite = spawnObjectSprite("plant_31.png", properties);
+			this->addChild(sprite);
 		}
 	}
 }
@@ -98,4 +106,42 @@ TMXObjectGroup *GameLevelMap::getObjectGroupOrThrow(const std::string &name)
 		throw std::runtime_error("can't find layer '" + name + "' on map");
 	}
 	return group;
+}
+
+Rect GameLevelMap::getObjectRect(const ValueMap &properties) const
+{
+	Rect rect;
+	rect.origin.x = properties.at("x").asFloat();
+	rect.origin.y = properties.at("y").asFloat();
+	rect.size.width = properties.at("width").asFloat();
+	rect.size.height = properties.at("height").asFloat();
+
+	return rect;
+}
+
+bool GameLevelMap::getOptionalBool(const ValueMap &properties, const std::string &name) const
+{
+	auto it = properties.find(name);
+	if (it != properties.end() && !it->second.isNull())
+	{
+		return it->second.asBool();
+	}
+	return false;
+}
+
+RefPtr<Sprite> GameLevelMap::spawnObjectSprite(const std::string &frameName, const ValueMap &properties) const
+{
+	const Rect spriteRect = getObjectRect(properties);
+	const bool flipX = getOptionalBool(properties, kPropertyFlipX);
+
+	RefPtr<Sprite> sprite = Sprite::createWithSpriteFrameName(frameName);
+	if (!sprite)
+	{
+		throw std::runtime_error("cannot load sprite \""s + frameName + "\""s);
+	}
+	sprite->setFlippedX(flipX);
+	sprite->setPosition(spriteRect.origin);
+	sprite->setAnchorPoint(Vec2{ 0.0f, 0.0f });
+
+	return sprite;
 }

@@ -3,19 +3,6 @@
 using namespace cocos2d;
 using namespace std::literals;
 
-namespace
-{
-RefPtr<Sprite> createWithSpriteFrameNameSafe(const char *frameName)
-{
-	RefPtr<Sprite> sprite = Sprite::createWithSpriteFrameName(frameName);
-	if (!sprite)
-	{
-		throw std::runtime_error("cannot load \""s + frameName + "\""s);
-	}
-	return sprite;
-}
-} // namespace
-
 Scene *GameLevelScene::createScene()
 {
 	return GameLevelScene::create();
@@ -41,5 +28,5 @@ void GameLevelScene::tryInit()
 
 void GameLevelScene::preloadResources()
 {
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("res/goat.plist");
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("res/objects.plist");
 }
