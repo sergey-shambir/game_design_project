@@ -4,6 +4,7 @@
 
 static constexpr char EVENT_WIN_ON_LEVEL[] = "level_win";
 static constexpr char EVENT_LOSE_ON_LEVEL[] = "level_lose";
+static constexpr char EVENT_RETRY_LEVEL[] = "level_retry";
 
 static constexpr char GAME_LEVEL1_ID[] = "res/goats_level1.tmx";
 static constexpr char GAME_LEVEL2_ID[] = "res/goats_level2.tmx";

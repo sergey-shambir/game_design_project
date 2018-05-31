@@ -57,3 +57,4 @@ CMakeLists.txt.user*
 # Cocos2d-x specific
 cocos2d/
 Design/
+bin/

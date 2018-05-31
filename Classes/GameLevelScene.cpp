@@ -51,6 +51,17 @@ void GameLevelScene::tryInit()
 			}
 		}
 	});
+
+	m_retryListener = EventListenerCustom::create(EVENT_RETRY_LEVEL, [this](EventCustom *event) {
+		if (LevelEventData *data = CustomEvents::get<LevelEventData>(event))
+		{
+			if (data->getLevelId() == m_levelId)
+			{
+				auto *scene = GameLevelScene::createScene(m_levelId);
+				Director::getInstance()->replaceScene(TransitionFade::create(1.0f, scene));
+			}
+		}
+	});
 }
 
 void GameLevelScene::preloadResources()
@@ -62,6 +73,7 @@ void GameLevelScene::removeListeners()
 {
 	getEventDispatcher()->removeEventListener(m_winListener);
 	getEventDispatcher()->removeEventListener(m_loseListener);
+	getEventDispatcher()->removeEventListener(m_retryListener);
 }
 
 void GameLevelScene::switchNextScene()
@@ -95,6 +107,7 @@ void GameLevelScene::onEnter()
 	AbstractScene::onEnter();
 	getEventDispatcher()->addEventListenerWithFixedPriority(m_winListener, 1);
 	getEventDispatcher()->addEventListenerWithFixedPriority(m_loseListener, 1);
+	getEventDispatcher()->addEventListenerWithFixedPriority(m_retryListener, 1);
 }
 
 void GameLevelScene::onExit()

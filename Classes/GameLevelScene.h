@@ -25,4 +25,5 @@ private:
 	cocos2d::RefPtr<BoundariesLayer> m_hud;
 	cocos2d::RefPtr<cocos2d::EventListenerCustom> m_winListener;
 	cocos2d::RefPtr<cocos2d::EventListenerCustom> m_loseListener;
+	cocos2d::RefPtr<cocos2d::EventListenerCustom> m_retryListener;
 };

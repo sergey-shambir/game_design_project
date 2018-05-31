@@ -73,11 +73,11 @@ void BoundariesLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelMap 
 	m_commitedLinesNode->setLineWidth(kLineWidth);
 	addChild(m_commitedLinesNode, 2);
 
+#if 0
 	m_debugNode = DrawNode::create();
 	m_debugNode->setContentSize(layerSize);
 	addChild(m_debugNode, 1);
 
-#if 0
 	for (const Rect &animal : m_map->getAnimalsRects())
 	{
 		m_debugNode->drawRect(animal.origin, animal.origin + Vec2(animal.size), kColorValidLine);
@@ -177,8 +177,15 @@ void BoundariesLayer::checkWinLose()
 			auto event = CustomEvents::make(EVENT_LOSE_ON_LEVEL, LevelEventData::create(m_map->getLevelId()));
 			getEventDispatcher()->dispatchEvent(event);
 		});
-		finishBtn->setPosition(Vec2{ 0.5f * size.x, 0.3f * size.y });
+		finishBtn->setPosition(Vec2{ 0.65f * size.x, 0.3f * size.y });
 		m_gameOverNode->addChild(finishBtn, 2);
+
+		RefPtr<ui::Button> retryBtn = ViewsFactory::createButton("Retry", [this] {
+			auto event = CustomEvents::make(EVENT_RETRY_LEVEL, LevelEventData::create(m_map->getLevelId()));
+			getEventDispatcher()->dispatchEvent(event);
+		});
+		retryBtn->setPosition(Vec2{ 0.35f * size.x, 0.3f * size.y });
+		m_gameOverNode->addChild(retryBtn, 2);
 	}
 }
 
