@@ -9,6 +9,7 @@ const char kLayerNameGround[] = "ground_tiles";
 const char kLayerNameUnits[] = "units";
 const char kPropertyType[] = "type";
 const char kPropertyFlipX[] = "flipX";
+const char kPropertyBoundaryCount[] = "boundary_count";
 const char kTypeGoat[] = "goat";
 const char kTypePlant[] = "plant";
 const float kGoatIdleSecondsMin = 1.5f;
@@ -68,6 +69,30 @@ cocos2d::Size GameLevelMap::getMapVisibleSize() const
 	return Size{ tileSize.width * sizeInTiles.width, tileSize.height * sizeInTiles.height };
 }
 
+unsigned GameLevelMap::getBoundaryCount() const
+{
+	return m_boundaryCount;
+}
+
+std::vector<Rect> GameLevelMap::getAllObstacles() const
+{
+	std::vector<Rect> obstacles = getAnimalsRects();
+	std::vector<Rect> plants = getPlantsRects();
+	obstacles.insert(obstacles.end(), plants.begin(), plants.end());
+
+	return obstacles;
+}
+
+std::vector<Rect> GameLevelMap::getAnimalsRects() const
+{
+	return getMapSpritesRects(m_goats);
+}
+
+std::vector<Rect> GameLevelMap::getPlantsRects() const
+{
+	return getMapSpritesRects(m_plants);
+}
+
 void GameLevelMap::initWithTMXFile(const std::string &tmxFile)
 {
 	if (!TMXTiledMap::initWithTMXFile(tmxFile))
@@ -104,6 +129,8 @@ void GameLevelMap::loadUnits()
 			this->addChild(sprite);
 		}
 	}
+
+	m_boundaryCount = group->getProperties().at(kPropertyBoundaryCount).asInt();
 }
 
 TMXObjectGroup *GameLevelMap::getObjectGroupOrThrow(const std::string &name)
@@ -116,7 +143,7 @@ TMXObjectGroup *GameLevelMap::getObjectGroupOrThrow(const std::string &name)
 	return group;
 }
 
-cocos2d::RefPtr<Sprite> GameLevelMap::spawnGoat(const ValueMap &properties)
+cocos2d::RefPtr<Sprite> GameLevelMap::spawnGoat(const ValueMap &properties) const
 {
 	auto sprite = spawnObjectSprite("goat_idle.png", properties);
 	Rect spriteRect = sprite->getTextureRect();
@@ -151,6 +178,16 @@ RefPtr<Sprite> GameLevelMap::spawnObjectSprite(const std::string &frameName, con
 	sprite->setAnchorPoint(Vec2{ 0.5f, 0.5f });
 
 	return sprite;
+}
+
+std::vector<Rect> GameLevelMap::getMapSpritesRects(const cocos2d::Vector<Sprite *> &sprites) const
+{
+	std::vector<Rect> rects(sprites.size());
+	std::transform(sprites.begin(), sprites.end(), rects.begin(), [this](Sprite *sprite) {
+		return RectApplyAffineTransform(sprite->getBoundingBox(),
+			this->getNodeToParentAffineTransform());
+	});
+	return rects;
 }
 
 Rect GameLevelMap::getObjectRect(const ValueMap &properties) const

@@ -16,17 +16,20 @@ void WelcomeScene::tryInit()
 
 	auto level1Item = ViewsFactory::createMenuItemLabel("Play on level 1", [](auto &&) {
 		// TODO: pass level1.tmx to scene.
-		Director::getInstance()->pushScene(GameLevelScene::createScene());
+		auto scene = GameLevelScene::createScene();
+		Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
 	});
 
 	auto level2Item = ViewsFactory::createMenuItemLabel("Play on level 2", [](auto &&) {
 		// TODO: pass level1.tmx to scene.
-		Director::getInstance()->pushScene(GameLevelScene::createScene());
+		auto scene = GameLevelScene::createScene();
+		Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
 	});
 
 	auto level3Item = ViewsFactory::createMenuItemLabel("Play on level 3", [](auto &&) {
 		// TODO: pass level1.tmx to scene.
-		Director::getInstance()->pushScene(GameLevelScene::createScene());
+		auto scene = GameLevelScene::createScene();
+		Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
 	});
 
 	auto closeItem = ViewsFactory::createMenuItemLabel("Quit", [](auto &&) {

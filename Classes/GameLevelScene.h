@@ -2,6 +2,7 @@
 
 #include "AbstractScene.h"
 #include "GameLevelMap.h"
+#include "BoundariesLayer.h"
 
 class GameLevelScene : public AbstractScene
 {
@@ -17,4 +18,5 @@ private:
     void preloadResources();
 
 	cocos2d::RefPtr<GameLevelMap> m_map;
+	cocos2d::RefPtr<BoundariesLayer> m_hud;
 };

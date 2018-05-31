@@ -17,6 +17,9 @@
   </data>
  </layer>
  <objectgroup name="units">
+  <properties>
+   <property name="boundary_count" type="int" value="1"/>
+  </properties>
   <object id="18" name="goat" type="goat" gid="2147483697" x="78.4503" y="114.838" width="64" height="64">
    <properties>
     <property name="flipX" type="bool" value="true"/>
