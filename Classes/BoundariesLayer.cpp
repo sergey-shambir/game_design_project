@@ -1,4 +1,6 @@
 #include "BoundariesLayer.h"
+#include "CustomEvents.h"
+#include "ViewsFactory.h"
 
 using namespace cocos2d;
 
@@ -11,6 +13,7 @@ const float kLineWidth = 20.f;
 const cocos2d::Color4F kColorCommitedLine = { 0.2f, 0.2f, 0.5f, 1.0f };
 const cocos2d::Color4F kColorValidLine = { 0.3f, 0.7f, 1.0f, 0.5f };
 const cocos2d::Color4F kColorInvalidLine = { 1.0f, 0.2f, 0.2f, 0.5f };
+const cocos2d::Color4F kGameOverSplashColor = { 0.0f, 0.0f, 0.0f, 0.6f };
 } // namespace
 
 BoundariesLayer *BoundariesLayer::create(const cocos2d::Size &layerSize, IGameLevelMap &map)
@@ -20,6 +23,11 @@ BoundariesLayer *BoundariesLayer::create(const cocos2d::Size &layerSize, IGameLe
 	layer->autorelease();
 
 	return layer;
+}
+
+bool BoundariesLayer::isGameFinished() const
+{
+	return (m_status != GameStatus::Playing);
 }
 
 void BoundariesLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelMap &map)
@@ -51,6 +59,10 @@ void BoundariesLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelMap 
 	};
 	m_touchListener->setSwallowTouches(true);
 
+	m_gameOverNode = DrawNode::create();
+	m_gameOverNode->setContentSize(getContentSize());
+	addChild(m_gameOverNode, 5);
+
 	m_tempLineNode = DrawNode::create();
 	m_tempLineNode->setContentSize(layerSize);
 	m_tempLineNode->setLineWidth(kLineWidth);
@@ -65,24 +77,31 @@ void BoundariesLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelMap 
 	m_debugNode->setContentSize(layerSize);
 	addChild(m_debugNode, 1);
 
-	for (const Rect& animal : m_map->getAnimalsRects())
+#if 0
+	for (const Rect &animal : m_map->getAnimalsRects())
 	{
 		m_debugNode->drawRect(animal.origin, animal.origin + Vec2(animal.size), kColorValidLine);
 	}
-	for (const Rect& plant : m_map->getPlantsRects())
+	for (const Rect &plant : m_map->getPlantsRects())
 	{
 		m_debugNode->drawRect(plant.origin, plant.origin + Vec2(plant.size), kColorInvalidLine);
 	}
+#endif
 }
 
 void BoundariesLayer::onEnter()
 {
-	getEventDispatcher()->addEventListenerWithFixedPriority(m_touchListener, kTouchListenerPriority);
+	Node::onEnter();
+	if (m_status == GameStatus::Playing)
+	{
+		getEventDispatcher()->addEventListenerWithFixedPriority(m_touchListener, kTouchListenerPriority);
+	}
 }
 
 void BoundariesLayer::onExit()
 {
 	getEventDispatcher()->removeEventListener(m_touchListener);
+	Node::onExit();
 }
 
 void BoundariesLayer::updateBoundary(Touch *touch)
@@ -119,7 +138,48 @@ void BoundariesLayer::commitBoundary(Touch *touch)
 void BoundariesLayer::checkWinLose()
 {
 	m_status = doePlayerWin() ? GameStatus::Win : GameStatus::Lose;
-	// TODO: add "Finish" button
+	getEventDispatcher()->removeEventListener(m_touchListener);
+
+	const Vec2 size{ getContentSize() };
+	m_gameOverNode->drawSolidRect(Vec2{ 0, 0 }, size, kGameOverSplashColor);
+
+	if (m_status == GameStatus::Win)
+	{
+		RefPtr<Label> label = ViewsFactory::createLargeLabel("Game Over\nCongratulations, you won!");
+		label->setPosition(Vec2{ 0.5f * size.x, 0.7f * size.y });
+		m_gameOverNode->addChild(label, 1);
+
+		RefPtr<ui::Button> finishBtn = ViewsFactory::createButton("Continue", [this] {
+			auto event = CustomEvents::make(EVENT_WIN_ON_LEVEL, LevelEventData::create(m_map->getLevelId()));
+			getEventDispatcher()->dispatchEvent(event);
+		});
+		finishBtn->setPosition(Vec2{ 0.5f * size.x, 0.3f * size.y });
+		m_gameOverNode->addChild(finishBtn, 2);
+
+		{
+			auto emitter = ParticleFireworks::create();
+			emitter->setPosition(Vec2{ 0.1f * size.x, 0.1f * size.y });
+			m_gameOverNode->addChild(emitter, 1);
+		}
+		{
+			auto emitter = ParticleFireworks::create();
+			emitter->setPosition(Vec2{ 0.9f * size.x, 0.1f * size.y });
+			m_gameOverNode->addChild(emitter, 1);
+		}
+	}
+	else
+	{
+		RefPtr<Label> label = ViewsFactory::createLargeLabel("Game Over\nUnfortunately, you lose...");
+		label->setPosition(Vec2{ 0.5f * size.x, 0.5f * size.y });
+		m_gameOverNode->addChild(label, 1);
+
+		RefPtr<ui::Button> finishBtn = ViewsFactory::createButton("Exit", [this] {
+			auto event = CustomEvents::make(EVENT_LOSE_ON_LEVEL, LevelEventData::create(m_map->getLevelId()));
+			getEventDispatcher()->dispatchEvent(event);
+		});
+		finishBtn->setPosition(Vec2{ 0.5f * size.x, 0.3f * size.y });
+		m_gameOverNode->addChild(finishBtn, 2);
+	}
 }
 
 bool BoundariesLayer::isBoundaryValid(const Line &boundary)

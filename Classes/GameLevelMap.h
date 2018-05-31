@@ -8,17 +8,18 @@ class GameLevelMap
 	  public IGameLevelMap
 {
 public:
-	static GameLevelMap *create(const std::string &tmxFile);
+	static GameLevelMap *create(const cocos2d::Size &layerSize, const std::string &levelId);
 
 	cocos2d::Size getMapVisibleSize() const;
 
+	std::string getLevelId() const final;
 	unsigned getBoundaryCount() const final;
 	std::vector<cocos2d::Rect> getAllObstacles() const final;
 	std::vector<cocos2d::Rect> getAnimalsRects() const final;
 	std::vector<cocos2d::Rect> getPlantsRects() const final;
 
 private:
-	void initWithTMXFile(const std::string &tmxFile);
+	void initWithTMXFile(const cocos2d::Size &layerSize, const std::string &levelId);
 	void loadUnits();
 	cocos2d::TMXObjectGroup *getObjectGroupOrThrow(const std::string &name);
 	cocos2d::RefPtr<cocos2d::Sprite> spawnGoat(const cocos2d::ValueMap &properties) const;
@@ -29,6 +30,7 @@ private:
 	bool getOptionalBool(const cocos2d::ValueMap &properties, const std::string &name) const;
 	float getRandomFloat(float from, float to) const;
 
+	std::string m_levelId;
 	cocos2d::Vector<cocos2d::Sprite *> m_goats;
 	cocos2d::Vector<cocos2d::Sprite *> m_plants;
 	unsigned m_boundaryCount = 0;

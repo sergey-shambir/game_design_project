@@ -53,10 +53,10 @@ void dumpValueMapKeys(const ValueMap &map)
 }
 } // namespace
 
-GameLevelMap *GameLevelMap::create(const std::string &tmxFile)
+GameLevelMap *GameLevelMap::create(const Size& layerSize, const std::string &levelId)
 {
 	RefPtr<GameLevelMap> ret = new (std::nothrow) GameLevelMap;
-	ret->initWithTMXFile(tmxFile);
+	ret->initWithTMXFile(layerSize, levelId);
 	ret->autorelease();
 	return ret;
 }
@@ -67,6 +67,11 @@ cocos2d::Size GameLevelMap::getMapVisibleSize() const
 	Size tileSize = TMXTiledMap::getTileSize();
 
 	return Size{ tileSize.width * sizeInTiles.width, tileSize.height * sizeInTiles.height };
+}
+
+std::string GameLevelMap::getLevelId() const
+{
+	return m_levelId;
 }
 
 unsigned GameLevelMap::getBoundaryCount() const
@@ -93,15 +98,18 @@ std::vector<Rect> GameLevelMap::getPlantsRects() const
 	return getMapSpritesRects(m_plants);
 }
 
-void GameLevelMap::initWithTMXFile(const std::string &tmxFile)
+void GameLevelMap::initWithTMXFile(const cocos2d::Size &layerSize, const std::string &tmxFile)
 {
 	if (!TMXTiledMap::initWithTMXFile(tmxFile))
 	{
 		throw std::runtime_error("cannot parse map from " + tmxFile);
 	}
 
-	const float scaleFactor = Director::getInstance()->getContentScaleFactor();
-	TMXTiledMap::setScale(scaleFactor);
+	m_levelId = tmxFile;
+
+	const Size mapSize = getContentSize();
+	const float scale = (std::min)(layerSize.width / mapSize.width, layerSize.height / mapSize.height);
+	TMXTiledMap::setScale(scale);
 
 	std::random_device device;
 	m_random.seed(device());
@@ -174,8 +182,8 @@ RefPtr<Sprite> GameLevelMap::spawnObjectSprite(const std::string &frameName, con
 	{
 		throw std::runtime_error("cannot load sprite \""s + frameName + "\""s);
 	}
-	sprite->setPosition(spriteRect.origin + 0.5f * Vec2{ spriteRect.size });
-	sprite->setAnchorPoint(Vec2{ 0.5f, 0.5f });
+	sprite->setPosition(Vec2{ spriteRect.getMinX(), spriteRect.getMaxY() });
+	sprite->setAnchorPoint(Vec2{ 0, 0 });
 
 	return sprite;
 }

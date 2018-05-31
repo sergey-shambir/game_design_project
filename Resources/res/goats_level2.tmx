@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="45" height="30" tilewidth="16" tileheight="16" nextobjectid="40">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="45" height="30" tilewidth="16" tileheight="16" nextobjectid="47">
  <tileset firstgid="1" name="grass-tiles" tilewidth="16" tileheight="16" tilecount="48" columns="12">
   <image source="grass-tiles.png" width="192" height="64"/>
  </tileset>
@@ -18,19 +18,19 @@
  </layer>
  <objectgroup name="units">
   <properties>
-   <property name="boundary_count" type="int" value="1"/>
+   <property name="boundary_count" type="int" value="2"/>
   </properties>
   <object id="18" name="goat" type="goat" gid="2147483697" x="78.4503" y="114.838" width="64" height="64">
    <properties>
     <property name="flipX" type="bool" value="false"/>
    </properties>
   </object>
-  <object id="21" name="goat" type="goat" gid="2147483697" x="52.9618" y="187.839" width="64" height="64">
+  <object id="21" name="goat" type="goat" gid="2147483697" x="183.375" y="449.701" width="64" height="64">
    <properties>
     <property name="flipX" type="bool" value="false"/>
    </properties>
   </object>
-  <object id="22" name="goat" type="goat" gid="2147483697" x="4.10875" y="262.18" width="64" height="64">
+  <object id="22" name="goat" type="goat" gid="2147483697" x="2.01231" y="177.274" width="64" height="64">
    <properties>
     <property name="flipX" type="bool" value="false"/>
    </properties>
@@ -39,16 +39,23 @@
   <object id="26" name="plant" type="plant" gid="50" x="294.11" y="123.373" width="32" height="40"/>
   <object id="27" name="plant" type="plant" gid="50" x="389.692" y="181.784" width="32" height="40"/>
   <object id="28" name="plant" type="plant" gid="50" x="471.468" y="80.8921" width="32" height="40"/>
-  <object id="29" name="plant" type="plant" gid="50" x="208.087" y="263.56" width="32" height="40"/>
+  <object id="29" name="plant" type="plant" gid="50" x="200.749" y="248.885" width="32" height="40"/>
   <object id="30" name="plant" type="plant" gid="50" x="461.91" y="303.917" width="32" height="40"/>
   <object id="31" name="plant" type="plant" gid="50" x="337.653" y="343.212" width="32" height="40"/>
   <object id="32" name="plant" type="plant" gid="50" x="623.337" y="229.575" width="32" height="40"/>
   <object id="33" name="plant" type="plant" gid="50" x="574.484" y="97.8845" width="32" height="40"/>
-  <object id="34" name="plant" type="plant" gid="50" x="83.8301" y="437.732" width="32" height="40"/>
-  <object id="35" name="plant" type="plant" gid="50" x="212.335" y="361.266" width="32" height="40"/>
-  <object id="36" name="plant" type="plant" gid="50" x="547.934" y="465.344" width="32" height="40"/>
-  <object id="37" name="plant" type="plant" gid="50" x="305.793" y="448.352" width="32" height="40"/>
+  <object id="34" name="plant" type="plant" gid="50" x="27.2263" y="429.346" width="32" height="40"/>
+  <object id="35" name="plant" type="plant" gid="50" x="378.639" y="102.046" width="32" height="40"/>
+  <object id="36" name="plant" type="plant" gid="50" x="456.739" y="419.222" width="32" height="40"/>
+  <object id="37" name="plant" type="plant" gid="50" x="15.4366" y="325.71" width="32" height="40"/>
   <object id="38" name="plant" type="plant" gid="50" x="570.236" y="310.289" width="32" height="40"/>
   <object id="39" name="plant" type="plant" gid="50" x="499.783" y="196.373" width="32" height="40"/>
+  <object id="40" name="plant" type="plant" gid="50" x="340" y="425" width="32" height="40"/>
+  <object id="41" name="plant" type="plant" gid="50" x="226" y="178" width="32" height="40"/>
+  <object id="42" name="plant" type="plant" gid="50" x="103" y="364" width="32" height="40"/>
+  <object id="43" name="plant" type="plant" gid="50" x="665" y="105" width="32" height="40"/>
+  <object id="44" name="plant" type="plant" gid="50" x="251" y="64" width="32" height="40"/>
+  <object id="45" name="plant" type="plant" gid="50" x="197" y="61" width="32" height="40"/>
+  <object id="46" name="plant" type="plant" gid="50" x="182" y="160" width="32" height="40"/>
  </objectgroup>
 </map>

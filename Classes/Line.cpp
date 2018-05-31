@@ -13,9 +13,9 @@ bool isBetween(float value, float from, float to)
     return (value >= from && value <= to);
 }
 
-bool areAlmostEqual(float a, float b)
+bool areAlmostEqual(float a, float b, float tolerance = 0.001f)
 {
-    return std::abs(a - b) < std::numeric_limits<float>::epsilon();
+	return std::abs(a - b) < tolerance;
 }
 
 float distance(const Vec2 &a, const Vec2 &b)
@@ -72,8 +72,10 @@ bool Line::intersectsRect(const Rect &rect) const
 {
     const float left = rect.getMinX();
     const float right = rect.getMaxX();
-    const float top = rect.getMaxX();
-    const float bottom = rect.getMinX();
+	const float top = rect.getMaxY();
+	const float bottom = rect.getMinY();
+	assert(left < right);
+	assert(bottom < top);
 
     Vec2 point = { 0, 0 };
     const bool intersectsLeft = (getLinePointByX(left, point) && isBetween(point.y, bottom, top));
@@ -81,7 +83,7 @@ bool Line::intersectsRect(const Rect &rect) const
     const bool intersectsTop = (getLinePointByY(top, point) && isBetween(point.x, left, right));
     const bool intersectsBottom = (getLinePointByY(bottom, point) && isBetween(point.x, left, right));
 
-    return intersectsLeft || intersectsRight || intersectsTop || intersectsBottom;
+	return intersectsLeft || intersectsRight || intersectsTop || intersectsBottom;
 }
 
 bool Line::isPointOnLeft(const Vec2 &point) const
@@ -110,6 +112,7 @@ bool Line::getLinePointByX(float x, Vec2 &point) const
         float t = (x - vertexB.x) / (vertexA.x - vertexB.x);
         point = vertexB * (1 - t) + vertexA * t;
     }
+	assert(areAlmostEqual(point.x, x, 0.1f));
     return true;
 }
 
@@ -131,5 +134,6 @@ bool Line::getLinePointByY(float y, Vec2 &point) const
         float t = (y - vertexB.y) / (vertexA.y - vertexB.y);
         point = vertexB * (1 - t) + vertexA * t;
     }
+	assert(areAlmostEqual(point.y, y, 0.1f));
     return true;
 }

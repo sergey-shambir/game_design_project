@@ -15,6 +15,8 @@ class BoundariesLayer : public cocos2d::Node
 public:
 	static BoundariesLayer *create(const cocos2d::Size &layerSize, IGameLevelMap &map);
 
+	bool isGameFinished() const;
+
 private:
 	void initWithMap(const cocos2d::Size &layerSize, IGameLevelMap &map);
 	void onEnter() override;
@@ -29,6 +31,7 @@ private:
 	cocos2d::RefPtr<cocos2d::EventListenerTouchOneByOne> m_touchListener;
 	cocos2d::RefPtr<cocos2d::DrawNode> m_tempLineNode;
 	cocos2d::RefPtr<cocos2d::DrawNode> m_commitedLinesNode;
+	cocos2d::RefPtr<cocos2d::DrawNode> m_gameOverNode;
 	cocos2d::RefPtr<cocos2d::DrawNode> m_debugNode;
 
 	Line m_nextBoundary;

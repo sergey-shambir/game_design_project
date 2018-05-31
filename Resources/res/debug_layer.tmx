@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="45" height="30" tilewidth="16" tileheight="16" nextobjectid="40">
+ <tileset firstgid="1" name="grass-tiles" tilewidth="16" tileheight="16" tilecount="48" columns="12">
+  <image source="grass-tiles.png" width="192" height="64"/>
+ </tileset>
+ <tileset firstgid="49" name="sprites" tilewidth="64" tileheight="64" tilecount="2" columns="0">
+  <tile id="0">
+   <image width="64" height="64" source="objects/goat_left.png"/>
+  </tile>
+  <tile id="1">
+   <image width="32" height="40" source="objects/plant_40.png"/>
+  </tile>
+ </tileset>
+ <layer name="ground_tiles" width="45" height="30">
+  <data encoding="base64" compression="zlib">
+   eJztmGsLgjAYhWeQZjcou0FfMuhK9v9/XkfyhSVTN91eJ/ThcECStmePwxkIIUZIMKBeIEuNpnt0f++ybXN4IE8mznRthswrODetywlJkTNyZOS8Rw6l6/I86ub/QjLkjdwYONc1zaNvj1357NO+4aqrnh8uzvT/Jvepnh9Ozlze++Dn0Hxu4z2Xt11b9t5nb/8+d2tya0icyS2XnLtysc2fg4tt/n3vuzZ8pvXxYX/Q5Uzr4wPP/Jx2Qa6l9oGbqtdIhMTIVOoJIzfT9+SsGOMW2Um9YeRm+p6cFmMcI2ExVhq3D96qOh9ngqzE15PcCfKjb2+r+l6wjUrjjQ3m3eRjm3NdXdN3h0T8ehEbzLvJxzbnOp0OFaz79laHd5n1B76cLRs=
+  </data>
+ </layer>
+ <objectgroup name="units">
+  <properties>
+   <property name="boundary_count" type="int" value="100"/>
+  </properties>
+  <object id="21" name="goat" type="goat" gid="2147483697" x="52.9618" y="187.839" width="64" height="64">
+   <properties>
+    <property name="flipX" type="bool" value="false"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>
