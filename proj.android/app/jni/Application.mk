@@ -1,6 +1,8 @@
 APP_STL := c++_static
+NDK_TOOLCHAIN_VERSION := clang
+APP_PLATFORM := android-21
 
-APP_CPPFLAGS := -frtti -DCC_ENABLE_CHIPMUNK_INTEGRATION=1 -std=c++11 -fsigned-char -Wno-extern-c-compat
+APP_CPPFLAGS := -frtti -DCC_ENABLE_CHIPMUNK_INTEGRATION=1 -std=c++14 -fsigned-char -Wno-extern-c-compat
 APP_LDFLAGS := -latomic
 
 APP_ABI := armeabi-v7a

@@ -89,6 +89,11 @@ unsigned GameLevelMap::getBoundaryCount() const
 	return m_boundaryCount;
 }
 
+unsigned GameLevelMap::getEstimatedSpentSeconds() const
+{
+	return m_estimatedSpendSeconds;
+}
+
 std::vector<Rect> GameLevelMap::getAllObstacles() const
 {
 	std::vector<Rect> obstacles = getAnimalsRects();
@@ -148,7 +153,9 @@ void GameLevelMap::loadUnits()
 		}
 	}
 
+	constexpr float secondsPerLine = 10.0f;
 	m_boundaryCount = group->getProperties().at(kPropertyBoundaryCount).asInt();
+	m_estimatedSpendSeconds = m_boundaryCount * secondsPerLine;
 }
 
 TMXObjectGroup *GameLevelMap::getObjectGroupOrThrow(const std::string &name)

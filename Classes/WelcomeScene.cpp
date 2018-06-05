@@ -2,6 +2,7 @@
 #include "CustomEvents.h"
 #include "GameLevelScene.h"
 #include "ViewsFactory.h"
+#include "ScoreManager.h"
 
 using namespace cocos2d;
 
@@ -57,6 +58,7 @@ void WelcomeScene::initMenu()
 	const Size sceneSize = getContentSize();
 
 	auto level1Button = ViewsFactory::createButton("Play Now!", []() {
+		ScoreManager::getInstance().updateBeforeFirstLevel();
 		auto scene = GameLevelScene::createScene(GAME_LEVEL1_ID);
 		Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
 	});

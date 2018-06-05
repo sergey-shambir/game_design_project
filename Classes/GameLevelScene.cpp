@@ -37,6 +37,7 @@ void GameLevelScene::tryInit()
 			if (data->getLevelId() == m_levelId)
 			{
 				removeListeners();
+				reportWin();
 				switchNextScene();
 			}
 		}
@@ -62,6 +63,8 @@ void GameLevelScene::tryInit()
 			}
 		}
 	});
+
+	ScoreManager::getInstance().updateBeforeRoundStart(getRoundConditions());
 }
 
 void GameLevelScene::preloadResources()
@@ -74,6 +77,14 @@ void GameLevelScene::removeListeners()
 	getEventDispatcher()->removeEventListener(m_winListener);
 	getEventDispatcher()->removeEventListener(m_loseListener);
 	getEventDispatcher()->removeEventListener(m_retryListener);
+}
+
+void GameLevelScene::reportWin()
+{
+	RoundResults results;
+	results.linesSpent = m_hud->getLinesSpent();
+	results.secondsSpent = m_secondsLeft;
+	ScoreManager::getInstance().updateAfterRoundWin(getRoundConditions(), results);
 }
 
 void GameLevelScene::switchNextScene()
@@ -100,6 +111,21 @@ void GameLevelScene::switchNextScene()
 void GameLevelScene::switchWelcomeScene()
 {
 	Director::getInstance()->popScene();
+}
+
+RoundConditions GameLevelScene::getRoundConditions() const
+{
+	RoundConditions conditions;
+	conditions.linesMin = m_map->getBoundaryCount();
+	conditions.estimatedSeconds = m_map->getEstimatedSpentSeconds();
+
+	return conditions;
+}
+
+void GameLevelScene::update(float delta)
+{
+	m_secondsLeft += delta;
+	AbstractScene::update(delta);
 }
 
 void GameLevelScene::onEnter()

@@ -1,6 +1,7 @@
 #include "BoundariesLayer.h"
 #include "CustomEvents.h"
 #include "ViewsFactory.h"
+#include "ScoreManager.h"
 
 using namespace cocos2d;
 
@@ -14,6 +15,11 @@ const cocos2d::Color4F kColorCommitedLine = { 0.2f, 0.2f, 0.5f, 1.0f };
 const cocos2d::Color4F kColorValidLine = { 0.3f, 0.7f, 1.0f, 0.5f };
 const cocos2d::Color4F kColorInvalidLine = { 1.0f, 0.2f, 0.2f, 0.5f };
 const cocos2d::Color4F kGameOverSplashColor = { 0.0f, 0.0f, 0.0f, 0.6f };
+
+Vec2 size2vec(const Size& size)
+{
+	return Vec2{ size.width, size.height };
+}
 } // namespace
 
 BoundariesLayer *BoundariesLayer::create(const cocos2d::Size &layerSize, IGameLevelMap &map)
@@ -28,6 +34,11 @@ BoundariesLayer *BoundariesLayer::create(const cocos2d::Size &layerSize, IGameLe
 bool BoundariesLayer::isGameFinished() const
 {
 	return (m_status != GameStatus::Playing);
+}
+
+unsigned BoundariesLayer::getLinesSpent() const
+{
+	return static_cast<unsigned>(m_boundaries.size());
 }
 
 void BoundariesLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelMap &map)
@@ -77,14 +88,14 @@ void BoundariesLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelMap 
 	m_debugNode = DrawNode::create();
 	m_debugNode->setContentSize(layerSize);
 	addChild(m_debugNode, 1);
-
+APP_PLATFORM := android-16
 	for (const Rect &animal : m_map->getAnimalsRects())
 	{
-		m_debugNode->drawRect(animal.origin, animal.origin + Vec2(animal.size), kColorValidLine);
+		m_debugNode->drawRect(animal.origin, animal.origin + size2vec(animal.size), kColorValidLine);
 	}
 	for (const Rect &plant : m_map->getPlantsRects())
 	{
-		m_debugNode->drawRect(plant.origin, plant.origin + Vec2(plant.size), kColorInvalidLine);
+		m_debugNode->drawRect(plant.origin, plant.origin + size2vec(plant.size), kColorInvalidLine);
 	}
 #endif
 }
@@ -128,6 +139,7 @@ void BoundariesLayer::commitBoundary(Touch *touch)
 		Line visibleLine = m_nextBoundary.expandAB(Rect{ Vec2{ 0, 0 }, getContentSize() });
 		m_commitedLinesNode->drawLine(visibleLine.vertexA, visibleLine.vertexB, kColorCommitedLine);
 
+		ScoreManager::getInstance().updateAfterLinePut();
 		if (m_boundaries.size() >= m_map->getBoundaryCount())
 		{
 			checkWinLose();
@@ -137,10 +149,23 @@ void BoundariesLayer::commitBoundary(Touch *touch)
 
 void BoundariesLayer::checkWinLose()
 {
-	m_status = doePlayerWin() ? GameStatus::Win : GameStatus::Lose;
+	if (doePlayerWin())
+	{
+		m_status = GameStatus::Win;
+		finishRound();
+	}
+	else if (ScoreManager::getInstance().getLinesLeft() == 0)
+	{
+		m_status = GameStatus::Lose;
+		finishRound();
+	}
+}
+
+void BoundariesLayer::finishRound()
+{
 	getEventDispatcher()->removeEventListener(m_touchListener);
 
-	const Vec2 size{ getContentSize() };
+	const Vec2 size{ size2vec(getContentSize()) };
 	m_gameOverNode->drawSolidRect(Vec2{ 0, 0 }, size, kGameOverSplashColor);
 
 	if (m_status == GameStatus::Win)

@@ -14,6 +14,7 @@ public:
 
 	std::string getLevelId() const final;
 	unsigned getBoundaryCount() const final;
+	unsigned getEstimatedSpentSeconds() const final;
 	std::vector<cocos2d::Rect> getAllObstacles() const final;
 	std::vector<cocos2d::Rect> getAnimalsRects() const final;
 	std::vector<cocos2d::Rect> getPlantsRects() const final;
@@ -34,5 +35,6 @@ private:
 	cocos2d::Vector<cocos2d::Sprite *> m_goats;
 	cocos2d::Vector<cocos2d::Sprite *> m_plants;
 	unsigned m_boundaryCount = 0;
+	float m_estimatedSpendSeconds = 0;
 	mutable std::mt19937 m_random;
 };
