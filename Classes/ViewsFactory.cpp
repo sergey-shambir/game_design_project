@@ -4,25 +4,50 @@ using namespace cocos2d;
 
 namespace
 {
+std::string getDefaultFontName()
+{
+	return "fonts/Marker Felt.ttf";
+}
+
 TTFConfig getMenuFont()
 {
-	return TTFConfig{ "fonts/arial.ttf", 16 };
+	return TTFConfig{ getDefaultFontName(), 16 };
+}
+
+TTFConfig getTitleFont()
+{
+	return TTFConfig{ getDefaultFontName(), 40 };
 }
 
 float getMenuItemDistance()
 {
 	return 20;
 }
-} // namespace
 
-cocos2d::RefPtr<Label> ViewsFactory::createLargeLabel(const std::string &textUtf8)
+int getButtonFontSize()
 {
-	RefPtr<Label> label = Label::createWithTTF(getMenuFont(), textUtf8, TextHAlignment::CENTER);
+	return 14;
+}
+
+cocos2d::RefPtr<Label> createLabel(const std::string &textUtf8, const TTFConfig &font)
+{
+	RefPtr<Label> label = Label::createWithTTF(font, textUtf8, TextHAlignment::CENTER);
 	if (!label)
 	{
 		throw std::runtime_error("cannot create label with text \"" + textUtf8 + "\"");
 	}
 	return label;
+}
+} // namespace
+
+cocos2d::RefPtr<Label> ViewsFactory::createLargeLabel(const std::string &textUtf8)
+{
+	return createLabel(textUtf8, getMenuFont());
+}
+
+cocos2d::RefPtr<Label> ViewsFactory::createTitleLabel(const std::string &textUtf8)
+{
+	return createLabel(textUtf8, getTitleFont());
 }
 
 cocos2d::RefPtr<cocos2d::MenuItemLabel> ViewsFactory::createMenuItemLabel(const std::string &textUtf8, const ccMenuCallback &cb)
@@ -56,14 +81,31 @@ cocos2d::RefPtr<Menu> ViewsFactory::createVerticalMenuWithArray(const cocos2d::V
 	return menu;
 }
 
-ui::Button *ViewsFactory::createButton(const std::string &title, const std::function<void()> &onClick)
+RefPtr<ui::Button> ViewsFactory::createButton(const std::string &title, const std::function<void()> &onClick)
 {
 	ui::Button *button = ui::Button::create("res/btn-normal.png", "res/btn-selected.png", "res/btn-disabled.png");
+	if (!button)
+	{
+		throw std::runtime_error("cannot create button '" + title + "'");
+	}
+
 	button->setTitleText(title);
+	button->setTitleFontName(getDefaultFontName());
+	button->setTitleFontSize(getButtonFontSize());
 	button->addClickEventListener([onClick](Ref *sender) {
 		(void)sender;
 		onClick();
 	});
 
 	return button;
+}
+
+RefPtr<LayerColor> ViewsFactory::createColoredLayer(const Color4B &color, const Size &size)
+{
+	RefPtr<LayerColor> layer = LayerColor::create(color, size.width, size.height);
+	if (!layer)
+	{
+		throw std::runtime_error("cannot create colored layer");
+	}
+	return layer;
 }

@@ -11,4 +11,8 @@ public:
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(WelcomeScene);
+
+private:
+	void initBackground();
+	void initMenu();
 };
