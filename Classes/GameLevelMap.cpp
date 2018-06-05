@@ -14,6 +14,16 @@ const char kTypeGoat[] = "goat";
 const char kTypePlant[] = "plant";
 const float kGoatIdleSecondsMin = 1.5f;
 const float kGoatIdleSecondsMax = 7.0f;
+const float kBoundingBoxScale = 0.85f;
+
+Rect scaleBoundingBox(Rect rect, float scale)
+{
+	rect.origin.x += 0.5f * (1.0f - scale) * rect.size.width;
+	rect.origin.y += 0.5f * (1.0f - scale) * rect.size.height;
+	rect.size.width *= scale;
+	rect.size.height *= scale;
+	return rect;
+}
 
 void dumpValueMapKeys(const ValueMap &map)
 {
@@ -192,8 +202,8 @@ std::vector<Rect> GameLevelMap::getMapSpritesRects(const cocos2d::Vector<Sprite 
 {
 	std::vector<Rect> rects(sprites.size());
 	std::transform(sprites.begin(), sprites.end(), rects.begin(), [this](Sprite *sprite) {
-		return RectApplyAffineTransform(sprite->getBoundingBox(),
-			this->getNodeToParentAffineTransform());
+		const Rect bbox = scaleBoundingBox(sprite->getBoundingBox(), kBoundingBoxScale);
+		return RectApplyAffineTransform(bbox, this->getNodeToParentAffineTransform());
 	});
 	return rects;
 }
