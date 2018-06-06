@@ -23,6 +23,7 @@ GameLevelScene *GameLevelScene::create(const std::string &levelId)
 
 void GameLevelScene::tryInit()
 {
+	scheduleUpdate();
 	preloadResources();
 
 	Size mapSize = getContentSize();

@@ -55,7 +55,7 @@ void ScoreManager::updateBeforeRoundStart(const RoundConditions &conditions)
 void ScoreManager::updateAfterRoundWin(const RoundConditions &conditions, const RoundResults &results)
 {
 	assert(results.linesSpent == m_linesSpentInRound);
-	assert(results.linesMin <= results.linesSpent);
+	assert(conditions.linesMin <= results.linesSpent);
 
 	unsigned gainedScore = getGainedScore(conditions, results);
 	unsigned bonusLines = getBonusLines(conditions, results);

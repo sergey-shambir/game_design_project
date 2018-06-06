@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AbstractScene.h"
-#include "BoundariesLayer.h"
+#include "HeadUpDisplayLayer.h"
 #include "GameLevelMap.h"
 #include "ScoreManager.h"
 

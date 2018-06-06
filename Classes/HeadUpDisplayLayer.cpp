@@ -1,4 +1,4 @@
-#include "BoundariesLayer.h"
+#include "HeadUpDisplayLayer.h"
 #include "CustomEvents.h"
 #include "ViewsFactory.h"
 #include "ScoreManager.h"
@@ -43,8 +43,16 @@ unsigned BoundariesLayer::getLinesSpent() const
 
 void BoundariesLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelMap &map)
 {
+	constexpr float kLinesLeftViewTopMargin = 20;
+	constexpr float kLinesLeftViewLeftMargin = 16;
+
 	Node::init();
 	Node::setContentSize(layerSize);
+	scheduleUpdate();
+
+	m_linesLeftView = LinesLeftView::create();
+	m_linesLeftView->setPosition(Vec2{ kLinesLeftViewLeftMargin, layerSize.height - kLinesLeftViewTopMargin });
+	this->addChild(m_linesLeftView);
 
 	m_map = &map;
 	m_touchListener = EventListenerTouchOneByOne::create();
@@ -98,6 +106,12 @@ APP_PLATFORM := android-16
 		m_debugNode->drawRect(plant.origin, plant.origin + size2vec(plant.size), kColorInvalidLine);
 	}
 #endif
+}
+
+void BoundariesLayer::update(float delta)
+{
+	m_linesLeftView->setLinesLeft(ScoreManager::getInstance().getLinesLeft());
+	Node::update(delta);
 }
 
 void BoundariesLayer::onEnter()

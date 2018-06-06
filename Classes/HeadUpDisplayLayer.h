@@ -2,6 +2,7 @@
 
 #include "IGameLevelMap.h"
 #include "Line.h"
+#include "LinesLeftView.h"
 
 enum class GameStatus
 {
@@ -20,6 +21,7 @@ public:
 
 private:
 	void initWithMap(const cocos2d::Size &layerSize, IGameLevelMap &map);
+	void update(float delta) override;
 	void onEnter() override;
 	void onExit() override;
 	void updateBoundary(cocos2d::Touch *touch);
@@ -35,6 +37,7 @@ private:
 	cocos2d::RefPtr<cocos2d::DrawNode> m_commitedLinesNode;
 	cocos2d::RefPtr<cocos2d::DrawNode> m_gameOverNode;
 	cocos2d::RefPtr<cocos2d::DrawNode> m_debugNode;
+	cocos2d::RefPtr<LinesLeftView> m_linesLeftView;
 
 	Line m_nextBoundary;
 	bool m_isNextBoundaryValid = false;
