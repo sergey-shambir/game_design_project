@@ -8,7 +8,7 @@ using namespace cocos2d;
 namespace
 {
 constexpr unsigned kTouchListenerPriority = 1;
-const float kMinTouchSlideLength = 60.0f;
+const float kMinTouchSlideLength = 30.0f;
 const float kLineWidth = 20.f;
 
 const cocos2d::Color4F kColorCommitedLine = { 0.2f, 0.2f, 0.5f, 1.0f };
@@ -46,6 +46,7 @@ void HeadUpDisplayLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelM
 	Node::setContentSize(layerSize);
 	scheduleUpdate();
 	m_map = &map;
+	m_secondsLeft = m_map->getEstimatedSpentSeconds();
 
 	m_linesLeftView = LinesLeftView::create();
 	m_linesLeftView->setPosition(Vec2{ 0, layerSize.height });
@@ -128,12 +129,14 @@ void HeadUpDisplayLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelM
 
 void HeadUpDisplayLayer::update(float delta)
 {
-	m_secondsLeft -= delta;
-
+	if (m_status == GameStatus::Playing)
+	{
+		m_secondsLeft = (std::max)(0.0f, m_secondsLeft - delta);
+	}
 	ScoreManager &scoreManager = ScoreManager::getInstance();
 	m_linesLeftView->setLinesLeft(scoreManager.getLinesLeft());
 	m_timeScoreView->setScore(scoreManager.getScore());
-
+	m_timeScoreView->setSecondsLeft(static_cast<unsigned>(std::round(m_secondsLeft)));
 	Node::update(delta);
 }
 
@@ -230,8 +233,6 @@ void HeadUpDisplayLayer::startLevel()
 			getEventDispatcher()->removeEventListener(m_startListener);
 		}
 		m_status = GameStatus::Playing;
-		m_secondsLeft = m_map->getEstimatedSpentSeconds();
-		scheduleUpdate();
 		m_timeScoreView->scheduleUpdate();
 	}
 }

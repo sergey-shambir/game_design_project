@@ -28,6 +28,16 @@ void TimeScoreView::setScore(unsigned value)
 	}
 }
 
+void TimeScoreView::setSecondsLeft(unsigned value)
+{
+	if (m_secondsLeft != value)
+	{
+		m_secondsLeft = value;
+		m_timeLeftLabel->setString(formatSecondsPassed());
+		updateBackground();
+	}
+}
+
 bool TimeScoreView::init()
 {
 	if (!DrawNode::init())
@@ -37,15 +47,15 @@ bool TimeScoreView::init()
 	try
 	{
 		m_scoreLabel = ViewsFactory::createLargeLabel(formatScore());
-		m_timeLeftPassed = ViewsFactory::createLargeLabel(formatSecondsPassed());
+		m_timeLeftLabel = ViewsFactory::createLargeLabel(formatSecondsPassed());
 
 		const Vec2 timeLeftPos = Vec2{ -kViewRightMargin, -kViewTopMargin };
-		const Size timeLeftSize = m_timeLeftPassed->getContentSize();
+		const Size timeLeftSize = m_timeLeftLabel->getContentSize();
 		const Vec2 scorePos = timeLeftPos - Vec2{ kItemsPadding + timeLeftSize.width, 0 };
 
-		m_timeLeftPassed->setAnchorPoint(Vec2{ 1, 1 });
-		m_timeLeftPassed->setPosition(timeLeftPos);
-		addChild(m_timeLeftPassed);
+		m_timeLeftLabel->setAnchorPoint(Vec2{ 1, 1 });
+		m_timeLeftLabel->setPosition(timeLeftPos);
+		addChild(m_timeLeftLabel);
 
 		m_scoreLabel->setAnchorPoint(Vec2{ 1, 1 });
 		m_scoreLabel->setPosition(scorePos);
@@ -59,13 +69,6 @@ bool TimeScoreView::init()
 		return false;
 	}
 	return true;
-}
-
-void TimeScoreView::update(float delta)
-{
-	m_timeLeft += delta;
-	setSecondsPassed(static_cast<unsigned>(std::round(m_timeLeft)));
-	DrawNode::update(delta);
 }
 
 std::string TimeScoreView::formatScore() const
@@ -85,19 +88,9 @@ std::string TimeScoreView::formatSecondsPassed() const
 	return std::string(kPrefix) + std::string(timeStr);
 }
 
-void TimeScoreView::setSecondsPassed(unsigned value)
-{
-	if (m_secondsLeft != value)
-	{
-		m_secondsLeft = value;
-		m_timeLeftPassed->setString(formatSecondsPassed());
-		updateBackground();
-	}
-}
-
 void TimeScoreView::updateBackground()
 {
-	Rect bgRect = m_timeLeftPassed->getBoundingBox().unionWithRect(m_scoreLabel->getBoundingBox());
+	Rect bgRect = m_timeLeftLabel->getBoundingBox().unionWithRect(m_scoreLabel->getBoundingBox());
 	bgRect.size.width += 2 * kViewBorder;
 	bgRect.size.height += 2 * kViewBorder;
 	bgRect.origin.x -= kViewBorder;

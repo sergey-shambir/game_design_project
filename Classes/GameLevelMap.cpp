@@ -152,9 +152,10 @@ void GameLevelMap::loadUnits()
 		}
 	}
 
-	constexpr float secondsPerLine = 15.0f;
+	constexpr float secondsExtra = 30.0f;
+	constexpr float secondsPerLine = 10.0f;
 	m_boundaryCount = group->getProperties().at(kPropertyBoundaryCount).asInt();
-	m_estimatedSpendSeconds = m_boundaryCount * secondsPerLine;
+	m_estimatedSpendSeconds = secondsExtra + m_boundaryCount * secondsPerLine;
 }
 
 TMXObjectGroup *GameLevelMap::getObjectGroupOrThrow(const std::string &name)
