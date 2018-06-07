@@ -27,7 +27,7 @@ private:
 
 	std::string m_levelId;
 	cocos2d::RefPtr<GameLevelMap> m_map;
-	cocos2d::RefPtr<BoundariesLayer> m_hud;
+	cocos2d::RefPtr<HeadUpDisplayLayer> m_hud;
 	std::vector<cocos2d::RefPtr<cocos2d::EventListenerCustom>> m_listeners;
 
 	float m_secondsLeft = 0;

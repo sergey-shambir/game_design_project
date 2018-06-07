@@ -14,34 +14,28 @@ const float kLineWidth = 20.f;
 const cocos2d::Color4F kColorCommitedLine = { 0.2f, 0.2f, 0.5f, 1.0f };
 const cocos2d::Color4F kColorValidLine = { 0.3f, 0.7f, 1.0f, 0.5f };
 const cocos2d::Color4F kColorInvalidLine = { 1.0f, 0.2f, 0.2f, 0.5f };
-const cocos2d::Color4F kGameOverSplashColor = { 0.0f, 0.0f, 0.0f, 0.75f };
-
-Vec2 size2vec(const Size &size)
-{
-	return Vec2{ size.width, size.height };
-}
 } // namespace
 
-BoundariesLayer *BoundariesLayer::create(const cocos2d::Size &layerSize, IGameLevelMap &map)
+HeadUpDisplayLayer *HeadUpDisplayLayer::create(const cocos2d::Size &layerSize, IGameLevelMap &map)
 {
-	RefPtr<BoundariesLayer> layer = new (std::nothrow) BoundariesLayer;
+	RefPtr<HeadUpDisplayLayer> layer = new (std::nothrow) HeadUpDisplayLayer;
 	layer->initWithMap(layerSize, map);
 	layer->autorelease();
 
 	return layer;
 }
 
-bool BoundariesLayer::isGameFinished() const
+bool HeadUpDisplayLayer::isGameFinished() const
 {
 	return (m_status != GameStatus::Playing);
 }
 
-unsigned BoundariesLayer::getLinesSpent() const
+unsigned HeadUpDisplayLayer::getLinesSpent() const
 {
 	return static_cast<unsigned>(m_boundaries.size());
 }
 
-void BoundariesLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelMap &map)
+void HeadUpDisplayLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelMap &map)
 {
 	Node::init();
 	Node::setContentSize(layerSize);
@@ -80,10 +74,6 @@ void BoundariesLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelMap 
 	};
 	m_touchListener->setSwallowTouches(true);
 
-	m_gameOverNode = DrawNode::create();
-	m_gameOverNode->setContentSize(getContentSize());
-	addChild(m_gameOverNode, 5);
-
 	m_tempLineNode = DrawNode::create();
 	m_tempLineNode->setContentSize(layerSize);
 	m_tempLineNode->setLineWidth(kLineWidth);
@@ -109,7 +99,7 @@ void BoundariesLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelMap 
 #endif
 }
 
-void BoundariesLayer::update(float delta)
+void HeadUpDisplayLayer::update(float delta)
 {
 	ScoreManager &scoreManager = ScoreManager::getInstance();
 	m_linesLeftView->setLinesLeft(scoreManager.getLinesLeft());
@@ -117,7 +107,7 @@ void BoundariesLayer::update(float delta)
 	Node::update(delta);
 }
 
-void BoundariesLayer::onEnter()
+void HeadUpDisplayLayer::onEnter()
 {
 	Node::onEnter();
 	if (m_status == GameStatus::Playing)
@@ -126,13 +116,13 @@ void BoundariesLayer::onEnter()
 	}
 }
 
-void BoundariesLayer::onExit()
+void HeadUpDisplayLayer::onExit()
 {
 	getEventDispatcher()->removeEventListener(m_touchListener);
 	Node::onExit();
 }
 
-void BoundariesLayer::updateBoundary(Touch *touch)
+void HeadUpDisplayLayer::updateBoundary(Touch *touch)
 {
 	m_nextBoundary = { touch->getStartLocation(), touch->getLocation() };
 	m_isNextBoundaryValid = isBoundaryValid(m_nextBoundary);
@@ -147,7 +137,7 @@ void BoundariesLayer::updateBoundary(Touch *touch)
 	}
 }
 
-void BoundariesLayer::commitBoundary(Touch *touch)
+void HeadUpDisplayLayer::commitBoundary(Touch *touch)
 {
 	updateBoundary(touch);
 	if (m_isNextBoundaryValid)
@@ -164,7 +154,7 @@ void BoundariesLayer::commitBoundary(Touch *touch)
 	}
 }
 
-void BoundariesLayer::checkWinLose()
+void HeadUpDisplayLayer::checkWinLose()
 {
 	if (doePlayerWin())
 	{
@@ -178,65 +168,16 @@ void BoundariesLayer::checkWinLose()
 	}
 }
 
-void BoundariesLayer::finishRound()
+void HeadUpDisplayLayer::finishRound()
 {
+	assert(m_map);
+
 	getEventDispatcher()->removeEventListener(m_touchListener);
-
-	const Vec2 size{ size2vec(getContentSize()) };
-	m_gameOverNode->drawSolidRect(Vec2{ 0, 0 }, size, kGameOverSplashColor);
-
-	if (m_status == GameStatus::Win)
-	{
-		auto event = CustomEvents::make(EVENT_WIN_ON_LEVEL, LevelEventData::create(m_map->getLevelId()));
-		getEventDispatcher()->dispatchEvent(event);
-
-		std::string text = "Game Over\nCongratulations, you won!\n"
-						   "Your score: " + std::to_string(ScoreManager::getInstance().getScore());
-		RefPtr<Label> label = ViewsFactory::createLargeLabel(text);
-		label->setPosition(Vec2{ 0.5f * size.x, 0.7f * size.y });
-		m_gameOverNode->addChild(label, 1);
-
-		RefPtr<ui::Button> finishBtn = ViewsFactory::createButton("Continue", [this] {
-			auto event = CustomEvents::make(EVENT_GO_NEXT_LEVEL, LevelEventData::create(m_map->getLevelId()));
-			getEventDispatcher()->dispatchEvent(event);
-		});
-		finishBtn->setPosition(Vec2{ 0.5f * size.x, 0.3f * size.y });
-		m_gameOverNode->addChild(finishBtn, 2);
-
-		{
-			auto emitter = ParticleFireworks::create();
-			emitter->setPosition(Vec2{ 0.1f * size.x, 0.1f * size.y });
-			m_gameOverNode->addChild(emitter, 1);
-		}
-		{
-			auto emitter = ParticleFireworks::create();
-			emitter->setPosition(Vec2{ 0.9f * size.x, 0.1f * size.y });
-			m_gameOverNode->addChild(emitter, 1);
-		}
-	}
-	else
-	{
-		RefPtr<Label> label = ViewsFactory::createLargeLabel("Game Over\nUnfortunately, you lose...");
-		label->setPosition(Vec2{ 0.5f * size.x, 0.5f * size.y });
-		m_gameOverNode->addChild(label, 1);
-
-		RefPtr<ui::Button> finishBtn = ViewsFactory::createButton("Exit", [this] {
-			auto event = CustomEvents::make(EVENT_EXIT_LEVEL, LevelEventData::create(m_map->getLevelId()));
-			getEventDispatcher()->dispatchEvent(event);
-		});
-		finishBtn->setPosition(Vec2{ 0.65f * size.x, 0.3f * size.y });
-		m_gameOverNode->addChild(finishBtn, 2);
-
-		RefPtr<ui::Button> retryBtn = ViewsFactory::createButton("Retry", [this] {
-			auto event = CustomEvents::make(EVENT_RETRY_LEVEL, LevelEventData::create(m_map->getLevelId()));
-			getEventDispatcher()->dispatchEvent(event);
-		});
-		retryBtn->setPosition(Vec2{ 0.35f * size.x, 0.3f * size.y });
-		m_gameOverNode->addChild(retryBtn, 2);
-	}
+	m_gameOverNode = GameOverLayer::create(getContentSize(), *m_map, m_status);
+	addChild(m_gameOverNode, 5);
 }
 
-bool BoundariesLayer::isBoundaryValid(const Line &boundary)
+bool HeadUpDisplayLayer::isBoundaryValid(const Line &boundary)
 {
 	if (boundary.getDistanceAB() < kMinTouchSlideLength)
 	{
@@ -252,7 +193,7 @@ bool BoundariesLayer::isBoundaryValid(const Line &boundary)
 	return (it == obstacles.end());
 }
 
-bool BoundariesLayer::doePlayerWin() const
+bool HeadUpDisplayLayer::doePlayerWin() const
 {
 	assert(m_map);
 	auto animalsRects = m_map->getAnimalsRects();

@@ -1,21 +1,16 @@
 #pragma once
 
+#include "GameStatus.h"
 #include "IGameLevelMap.h"
 #include "Line.h"
 #include "LinesLeftView.h"
 #include "TimeScoreView.h"
+#include "GameOverLayer.h"
 
-enum class GameStatus
-{
-	Playing,
-	Win,
-	Lose,
-};
-
-class BoundariesLayer : public cocos2d::Node
+class HeadUpDisplayLayer : public cocos2d::Node
 {
 public:
-	static BoundariesLayer *create(const cocos2d::Size &layerSize, IGameLevelMap &map);
+	static HeadUpDisplayLayer *create(const cocos2d::Size &layerSize, IGameLevelMap &map);
 
 	bool isGameFinished() const;
 	unsigned getLinesSpent() const;
@@ -36,7 +31,7 @@ private:
 	cocos2d::RefPtr<cocos2d::EventListenerTouchOneByOne> m_touchListener;
 	cocos2d::RefPtr<cocos2d::DrawNode> m_tempLineNode;
 	cocos2d::RefPtr<cocos2d::DrawNode> m_commitedLinesNode;
-	cocos2d::RefPtr<cocos2d::DrawNode> m_gameOverNode;
+	cocos2d::RefPtr<GameOverLayer> m_gameOverNode;
 	cocos2d::RefPtr<cocos2d::DrawNode> m_debugNode;
 	cocos2d::RefPtr<LinesLeftView> m_linesLeftView;
 	cocos2d::RefPtr<TimeScoreView> m_timeScoreView;

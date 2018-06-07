@@ -29,7 +29,7 @@ void GameLevelScene::tryInit()
 	Size mapSize = getContentSize();
 	m_map = GameLevelMap::create(mapSize, m_levelId);
 	this->addChild(m_map, 1);
-	m_hud = BoundariesLayer::create(mapSize, *m_map);
+	m_hud = HeadUpDisplayLayer::create(mapSize, *m_map);
 	this->addChild(m_hud, 2);
 
 	m_listeners.emplace_back(EventListenerCustom::create(EVENT_WIN_ON_LEVEL, [this](EventCustom *event) {
