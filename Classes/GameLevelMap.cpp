@@ -8,13 +8,12 @@ namespace
 const char kLayerNameGround[] = "ground_tiles";
 const char kLayerNameUnits[] = "units";
 const char kPropertyType[] = "type";
-const char kPropertyFlipX[] = "flipX";
 const char kPropertyBoundaryCount[] = "boundary_count";
 const char kTypeGoat[] = "goat";
 const char kTypePlant[] = "plant";
 const float kGoatIdleSecondsMin = 1.5f;
 const float kGoatIdleSecondsMax = 7.0f;
-const float kBoundingBoxScale = 0.85f;
+const float kBoundingBoxScale = 0.75f;
 
 Rect scaleBoundingBox(Rect rect, float scale)
 {

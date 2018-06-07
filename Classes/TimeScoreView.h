@@ -15,12 +15,12 @@ public:
 
 private:
 	std::string formatScore() const;
-	std::string formatSecondsLeft() const;
-	void setSecondsLeft(unsigned value);
+	std::string formatSecondsPassed() const;
+	void setSecondsPassed(unsigned value);
 
 	unsigned m_score = 0;
 	float m_timeLeft = 0;
 	unsigned m_secondsLeft = 0;
 	cocos2d::RefPtr<cocos2d::Label> m_scoreLabel;
-	cocos2d::RefPtr<cocos2d::Label> m_timeLeftLabel;
+	cocos2d::RefPtr<cocos2d::Label> m_timeLeftPassed;
 };
