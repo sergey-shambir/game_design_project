@@ -5,11 +5,12 @@ using namespace cocos2d;
 
 namespace
 {
+constexpr float kViewBorder = 3.0f;
 constexpr float kViewTopMargin = 8.0f;
 constexpr float kViewRightMargin = 8.0f;
 constexpr float kItemsPadding = 8.0f;
 
-const Color4B kLiteRedColor = { 200, 64, 64, 255 };
+const Color4F kViewBackgroundColor = { 0.2f, 0.2f, 0.2f, 0.6f };
 } // namespace
 
 void TimeScoreView::setEstimatedTime(float seconds)
@@ -23,12 +24,13 @@ void TimeScoreView::setScore(unsigned value)
 	{
 		m_score = value;
 		m_scoreLabel->setString(formatScore());
+		updateBackground();
 	}
 }
 
 bool TimeScoreView::init()
 {
-	if (!Node::init())
+	if (!DrawNode::init())
 	{
 		return false;
 	}
@@ -50,6 +52,8 @@ bool TimeScoreView::init()
 		m_scoreLabel->setAnchorPoint(Vec2{ 1, 1 });
 		m_scoreLabel->setPosition(scorePos);
 		addChild(m_scoreLabel);
+
+		updateBackground();
 	}
 	catch (const std::exception &ex)
 	{
@@ -63,7 +67,7 @@ void TimeScoreView::update(float delta)
 {
 	m_timeLeft += delta;
 	setSecondsPassed(static_cast<unsigned>(std::round(m_timeLeft)));
-	Node::update(delta);
+	DrawNode::update(delta);
 }
 
 std::string TimeScoreView::formatScore() const
@@ -89,5 +93,17 @@ void TimeScoreView::setSecondsPassed(unsigned value)
 	{
 		m_secondsLeft = value;
 		m_timeLeftPassed->setString(formatSecondsPassed());
+		updateBackground();
 	}
+}
+
+void TimeScoreView::updateBackground()
+{
+	Rect bgRect = m_timeLeftPassed->getBoundingBox().unionWithRect(m_scoreLabel->getBoundingBox());
+	bgRect.size.width += 2 * kViewBorder;
+	bgRect.size.height += 2 * kViewBorder;
+	bgRect.origin.x -= kViewBorder;
+	bgRect.origin.y -= kViewBorder;
+	clear();
+	drawSolidRect(Vec2{ bgRect.getMinX(), bgRect.getMinY() }, Vec2{ bgRect.getMaxX(), bgRect.getMaxY() }, kViewBackgroundColor);
 }

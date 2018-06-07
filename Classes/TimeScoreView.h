@@ -2,7 +2,7 @@
 
 #include "cocos2dgame.h"
 
-class TimeScoreView : public cocos2d::Node
+class TimeScoreView : public cocos2d::DrawNode
 {
 public:
 	CREATE_FUNC(TimeScoreView);
@@ -17,6 +17,7 @@ private:
 	std::string formatScore() const;
 	std::string formatSecondsPassed() const;
 	void setSecondsPassed(unsigned value);
+	void updateBackground();
 
 	unsigned m_score = 0;
 	float m_timeLeft = 0;
