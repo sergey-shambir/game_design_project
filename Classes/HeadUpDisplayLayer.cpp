@@ -132,6 +132,11 @@ void HeadUpDisplayLayer::update(float delta)
 	if (m_status == GameStatus::Playing)
 	{
 		m_secondsLeft = (std::max)(0.0f, m_secondsLeft - delta);
+		if (m_secondsLeft == 0.0f)
+		{
+			m_status = GameStatus::Lose;
+			finishRound();
+		}
 	}
 	ScoreManager &scoreManager = ScoreManager::getInstance();
 	m_linesLeftView->setLinesLeft(scoreManager.getLinesLeft());
