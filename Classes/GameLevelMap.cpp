@@ -152,7 +152,7 @@ void GameLevelMap::loadUnits()
 		}
 	}
 
-	constexpr float secondsPerLine = 10.0f;
+	constexpr float secondsPerLine = 15.0f;
 	m_boundaryCount = group->getProperties().at(kPropertyBoundaryCount).asInt();
 	m_estimatedSpendSeconds = m_boundaryCount * secondsPerLine;
 }

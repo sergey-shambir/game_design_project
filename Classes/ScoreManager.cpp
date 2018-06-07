@@ -68,17 +68,21 @@ void ScoreManager::updateAfterRoundWin(const RoundConditions &conditions, const 
 
 unsigned ScoreManager::getGainedScore(const RoundConditions &conditions, const RoundResults &results) const
 {
-	constexpr unsigned kMaxScoreForSpeed = 10;
-	constexpr unsigned kScorePerLine = 3;
+	constexpr unsigned kMaxScoreForSpeed = 100;
+	constexpr unsigned kScorePerLine = 15;
+	constexpr unsigned kScoreWhenNoExtraLines = 45;
 
 	// Бонус за оставшееся время уровня.
 	const float timeFactor = std::max(0.0f, results.secondsSpent / conditions.estimatedSeconds);
 	const unsigned timeScore = static_cast<unsigned>(std::round(kMaxScoreForSpeed * timeFactor));
 
+	// Бонус за отсутствие лишних линий
+	const unsigned noExtraLinesScore = (results.linesSpent == conditions.linesMin) ? kScoreWhenNoExtraLines : 0;
+
 	// Бонус за количество оставшихся линий.
 	const unsigned savedLinesScore = kScorePerLine * m_linesLeft;
 
-	return timeScore + savedLinesScore;
+	return timeScore + noExtraLinesScore + savedLinesScore;
 }
 
 unsigned ScoreManager::getBonusLines(const RoundConditions &conditions, const RoundResults &results) const
