@@ -18,6 +18,16 @@ unsigned ScoreManager::getScore() const
 	return m_score;
 }
 
+bool ScoreManager::didShowIntro() const
+{
+	return m_didShowIntro;
+}
+
+void ScoreManager::updateAfterIntroShown()
+{
+	m_didShowIntro = true;
+}
+
 void ScoreManager::updateAfterLinePut()
 {
 	assert(m_linesLeft > 0);
@@ -43,6 +53,7 @@ void ScoreManager::updateBeforeFirstLevel()
 	constexpr unsigned initialBonusLines = 1;
 	m_score = 0;
 	m_linesLeft = initialBonusLines;
+	m_didShowIntro = false;
 }
 
 void ScoreManager::updateBeforeRoundStart(const RoundConditions &conditions)
@@ -73,7 +84,7 @@ unsigned ScoreManager::getGainedScore(const RoundConditions &conditions, const R
 	constexpr unsigned kScoreWhenNoExtraLines = 45;
 
 	// Бонус за оставшееся время уровня.
-	const float timeFactor = std::max(0.0f, results.secondsSpent / conditions.estimatedSeconds);
+	const float timeFactor = std::max(0.0f, 1.0f - results.secondsSpent / conditions.estimatedSeconds);
 	const unsigned timeScore = static_cast<unsigned>(std::round(kMaxScoreForSpeed * timeFactor));
 
 	// Бонус за отсутствие лишних линий

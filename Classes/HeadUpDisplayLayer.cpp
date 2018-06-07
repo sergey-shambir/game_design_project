@@ -27,12 +27,17 @@ HeadUpDisplayLayer *HeadUpDisplayLayer::create(const cocos2d::Size &layerSize, I
 
 bool HeadUpDisplayLayer::isGameFinished() const
 {
-	return (m_status != GameStatus::Playing);
+	return (m_status != GameStatus::Playing) && (m_status != GameStatus::Intro);
 }
 
 unsigned HeadUpDisplayLayer::getLinesSpent() const
 {
 	return static_cast<unsigned>(m_boundaries.size());
+}
+
+float HeadUpDisplayLayer::getSecondsLeft() const
+{
+	return m_secondsLeft;
 }
 
 void HeadUpDisplayLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelMap &map)
@@ -84,6 +89,28 @@ void HeadUpDisplayLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelM
 	m_commitedLinesNode->setLineWidth(kLineWidth);
 	addChild(m_commitedLinesNode, 2);
 
+	if (!ScoreManager::getInstance().didShowIntro())
+	{
+		m_startListener = EventListenerCustom::create(EVENT_START_LEVEL, [this](EventCustom *event) {
+			if (LevelEventData *data = CustomEvents::get<LevelEventData>(event))
+			{
+				if (data->getLevelId() == m_map->getLevelId())
+				{
+					ScoreManager::getInstance().updateAfterIntroShown();
+					getEventDispatcher()->addEventListenerWithFixedPriority(m_touchListener, kTouchListenerPriority);
+					startLevel();
+				}
+			}
+		});
+
+		m_gameIntroNode = GameIntroLayer::create(getContentSize(), m_map->getLevelId());
+		addChild(m_gameIntroNode, 5);
+	}
+	else
+	{
+		startLevel();
+	}
+
 #if 0
 	m_debugNode = DrawNode::create();
 	m_debugNode->setContentSize(layerSize);
@@ -101,9 +128,12 @@ void HeadUpDisplayLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelM
 
 void HeadUpDisplayLayer::update(float delta)
 {
+	m_secondsLeft -= delta;
+
 	ScoreManager &scoreManager = ScoreManager::getInstance();
 	m_linesLeftView->setLinesLeft(scoreManager.getLinesLeft());
 	m_timeScoreView->setScore(scoreManager.getScore());
+
 	Node::update(delta);
 }
 
@@ -114,11 +144,19 @@ void HeadUpDisplayLayer::onEnter()
 	{
 		getEventDispatcher()->addEventListenerWithFixedPriority(m_touchListener, kTouchListenerPriority);
 	}
+	if (m_startListener)
+	{
+		getEventDispatcher()->addEventListenerWithFixedPriority(m_startListener, kTouchListenerPriority);
+	}
 }
 
 void HeadUpDisplayLayer::onExit()
 {
 	getEventDispatcher()->removeEventListener(m_touchListener);
+	if (m_startListener)
+	{
+		getEventDispatcher()->removeEventListener(m_startListener);
+	}
 	Node::onExit();
 }
 
@@ -175,6 +213,27 @@ void HeadUpDisplayLayer::finishRound()
 	getEventDispatcher()->removeEventListener(m_touchListener);
 	m_gameOverNode = GameOverLayer::create(getContentSize(), *m_map, m_status);
 	addChild(m_gameOverNode, 5);
+}
+
+void HeadUpDisplayLayer::startLevel()
+{
+	assert(m_status == GameStatus::Intro);
+	if (m_status == GameStatus::Intro)
+	{
+		if (m_gameIntroNode)
+		{
+			m_gameIntroNode->removeAllChildrenWithCleanup(true);
+			m_gameIntroNode->removeFromParentAndCleanup(true);
+		}
+		if (m_startListener)
+		{
+			getEventDispatcher()->removeEventListener(m_startListener);
+		}
+		m_status = GameStatus::Playing;
+		m_secondsLeft = m_map->getEstimatedSpentSeconds();
+		scheduleUpdate();
+		m_timeScoreView->scheduleUpdate();
+	}
 }
 
 bool HeadUpDisplayLayer::isBoundaryValid(const Line &boundary)

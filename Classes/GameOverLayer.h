@@ -11,5 +11,4 @@ public:
 
 private:
 	IGameLevelMap* m_map = nullptr;
-
 };

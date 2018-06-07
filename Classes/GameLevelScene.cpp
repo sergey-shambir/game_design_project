@@ -23,7 +23,6 @@ GameLevelScene *GameLevelScene::create(const std::string &levelId)
 
 void GameLevelScene::tryInit()
 {
-	scheduleUpdate();
 	preloadResources();
 
 	Size mapSize = getContentSize();
@@ -83,7 +82,7 @@ void GameLevelScene::preloadResources()
 
 void GameLevelScene::removeListeners()
 {
-	for (auto&& listener : m_listeners)
+	for (auto &&listener : m_listeners)
 	{
 		getEventDispatcher()->removeEventListener(listener);
 	}
@@ -93,7 +92,7 @@ void GameLevelScene::reportWin()
 {
 	RoundResults results;
 	results.linesSpent = m_hud->getLinesSpent();
-	results.secondsSpent = m_secondsLeft;
+	results.secondsSpent = m_hud->getSecondsLeft();
 	ScoreManager::getInstance().updateAfterRoundWin(getRoundConditions(), results);
 }
 
@@ -132,16 +131,10 @@ RoundConditions GameLevelScene::getRoundConditions() const
 	return conditions;
 }
 
-void GameLevelScene::update(float delta)
-{
-	m_secondsLeft += delta;
-	AbstractScene::update(delta);
-}
-
 void GameLevelScene::onEnter()
 {
 	AbstractScene::onEnter();
-	for (auto&& listener : m_listeners)
+	for (auto &&listener : m_listeners)
 	{
 		getEventDispatcher()->addEventListenerWithFixedPriority(listener, 1);
 	}

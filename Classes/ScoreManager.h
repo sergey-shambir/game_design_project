@@ -19,7 +19,9 @@ public:
 
 	unsigned getLinesLeft() const;
 	unsigned getScore() const;
+	bool didShowIntro() const;
 
+	void updateAfterIntroShown();
 	void updateAfterLinePut();
 	void updateAfterLineCanceled();
 
@@ -31,6 +33,7 @@ private:
 	unsigned getGainedScore(const RoundConditions &conditions, const RoundResults &results) const;
 	unsigned getBonusLines(const RoundConditions &conditions, const RoundResults &results) const;
 
+	bool m_didShowIntro = false;
 	unsigned m_score = 0;
 	unsigned m_linesLeft = 0;
 	unsigned m_linesSpentInRound = 0;

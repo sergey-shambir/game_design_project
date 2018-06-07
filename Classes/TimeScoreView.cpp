@@ -36,8 +36,6 @@ bool TimeScoreView::init()
 	}
 	try
 	{
-		scheduleUpdate();
-
 		m_scoreLabel = ViewsFactory::createLargeLabel(formatScore());
 		m_timeLeftPassed = ViewsFactory::createLargeLabel(formatSecondsPassed());
 
