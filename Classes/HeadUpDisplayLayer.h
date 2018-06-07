@@ -3,6 +3,7 @@
 #include "IGameLevelMap.h"
 #include "Line.h"
 #include "LinesLeftView.h"
+#include "TimeScoreView.h"
 
 enum class GameStatus
 {
@@ -38,6 +39,7 @@ private:
 	cocos2d::RefPtr<cocos2d::DrawNode> m_gameOverNode;
 	cocos2d::RefPtr<cocos2d::DrawNode> m_debugNode;
 	cocos2d::RefPtr<LinesLeftView> m_linesLeftView;
+	cocos2d::RefPtr<TimeScoreView> m_timeScoreView;
 
 	Line m_nextBoundary;
 	bool m_isNextBoundaryValid = false;

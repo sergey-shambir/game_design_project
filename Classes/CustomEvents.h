@@ -3,7 +3,8 @@
 #include "cocos2dgame.h"
 
 static constexpr char EVENT_WIN_ON_LEVEL[] = "level_win";
-static constexpr char EVENT_LOSE_ON_LEVEL[] = "level_lose";
+static constexpr char EVENT_GO_NEXT_LEVEL[] = "level_next";
+static constexpr char EVENT_EXIT_LEVEL[] = "level_lose";
 static constexpr char EVENT_RETRY_LEVEL[] = "level_retry";
 
 static constexpr char GAME_LEVEL1_ID[] = "res/goats_level1.tmx";

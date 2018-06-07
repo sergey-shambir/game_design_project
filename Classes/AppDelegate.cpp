@@ -87,7 +87,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 	{
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
 		cocos2d::Rect windowRect(0, 0, designResolutionSize.width, designResolutionSize.height);
-		glview = GLViewImpl::createWithRect("PSGoats", windowRect, desktopWindowScale);
+		glview = GLViewImpl::createWithRect("Stop the Goats!", windowRect, desktopWindowScale);
 #else
 		glview = GLViewImpl::create("PSGoats");
 #endif

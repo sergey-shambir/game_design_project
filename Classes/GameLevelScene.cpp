@@ -32,18 +32,26 @@ void GameLevelScene::tryInit()
 	m_hud = BoundariesLayer::create(mapSize, *m_map);
 	this->addChild(m_hud, 2);
 
-	m_winListener = EventListenerCustom::create(EVENT_WIN_ON_LEVEL, [this](EventCustom *event) {
+	m_listeners.emplace_back(EventListenerCustom::create(EVENT_WIN_ON_LEVEL, [this](EventCustom *event) {
+		if (LevelEventData *data = CustomEvents::get<LevelEventData>(event))
+		{
+			if (data->getLevelId() == m_levelId)
+			{
+				reportWin();
+			}
+		}
+	}));
+	m_listeners.emplace_back(EventListenerCustom::create(EVENT_GO_NEXT_LEVEL, [this](EventCustom *event) {
 		if (LevelEventData *data = CustomEvents::get<LevelEventData>(event))
 		{
 			if (data->getLevelId() == m_levelId)
 			{
 				removeListeners();
-				reportWin();
 				switchNextScene();
 			}
 		}
-	});
-	m_loseListener = EventListenerCustom::create(EVENT_LOSE_ON_LEVEL, [this](EventCustom *event) {
+	}));
+	m_listeners.emplace_back(EventListenerCustom::create(EVENT_EXIT_LEVEL, [this](EventCustom *event) {
 		if (LevelEventData *data = CustomEvents::get<LevelEventData>(event))
 		{
 			if (data->getLevelId() == m_levelId)
@@ -52,9 +60,9 @@ void GameLevelScene::tryInit()
 				switchWelcomeScene();
 			}
 		}
-	});
+	}));
 
-	m_retryListener = EventListenerCustom::create(EVENT_RETRY_LEVEL, [this](EventCustom *event) {
+	m_listeners.emplace_back(EventListenerCustom::create(EVENT_RETRY_LEVEL, [this](EventCustom *event) {
 		if (LevelEventData *data = CustomEvents::get<LevelEventData>(event))
 		{
 			if (data->getLevelId() == m_levelId)
@@ -63,7 +71,7 @@ void GameLevelScene::tryInit()
 				Director::getInstance()->replaceScene(TransitionFade::create(1.0f, scene));
 			}
 		}
-	});
+	}));
 
 	ScoreManager::getInstance().updateBeforeRoundStart(getRoundConditions());
 }
@@ -75,9 +83,10 @@ void GameLevelScene::preloadResources()
 
 void GameLevelScene::removeListeners()
 {
-	getEventDispatcher()->removeEventListener(m_winListener);
-	getEventDispatcher()->removeEventListener(m_loseListener);
-	getEventDispatcher()->removeEventListener(m_retryListener);
+	for (auto&& listener : m_listeners)
+	{
+		getEventDispatcher()->removeEventListener(listener);
+	}
 }
 
 void GameLevelScene::reportWin()
@@ -132,9 +141,10 @@ void GameLevelScene::update(float delta)
 void GameLevelScene::onEnter()
 {
 	AbstractScene::onEnter();
-	getEventDispatcher()->addEventListenerWithFixedPriority(m_winListener, 1);
-	getEventDispatcher()->addEventListenerWithFixedPriority(m_loseListener, 1);
-	getEventDispatcher()->addEventListenerWithFixedPriority(m_retryListener, 1);
+	for (auto&& listener : m_listeners)
+	{
+		getEventDispatcher()->addEventListenerWithFixedPriority(listener, 1);
+	}
 }
 
 void GameLevelScene::onExit()

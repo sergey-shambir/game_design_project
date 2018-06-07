@@ -1,7 +1,7 @@
 #include "HeadUpDisplayLayer.h"
 #include "CustomEvents.h"
-#include "ViewsFactory.h"
 #include "ScoreManager.h"
+#include "ViewsFactory.h"
 
 using namespace cocos2d;
 
@@ -14,9 +14,9 @@ const float kLineWidth = 20.f;
 const cocos2d::Color4F kColorCommitedLine = { 0.2f, 0.2f, 0.5f, 1.0f };
 const cocos2d::Color4F kColorValidLine = { 0.3f, 0.7f, 1.0f, 0.5f };
 const cocos2d::Color4F kColorInvalidLine = { 1.0f, 0.2f, 0.2f, 0.5f };
-const cocos2d::Color4F kGameOverSplashColor = { 0.0f, 0.0f, 0.0f, 0.6f };
+const cocos2d::Color4F kGameOverSplashColor = { 0.0f, 0.0f, 0.0f, 0.75f };
 
-Vec2 size2vec(const Size& size)
+Vec2 size2vec(const Size &size)
 {
 	return Vec2{ size.width, size.height };
 }
@@ -43,18 +43,20 @@ unsigned BoundariesLayer::getLinesSpent() const
 
 void BoundariesLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelMap &map)
 {
-	constexpr float kLinesLeftViewTopMargin = 20;
-	constexpr float kLinesLeftViewLeftMargin = 16;
-
 	Node::init();
 	Node::setContentSize(layerSize);
 	scheduleUpdate();
+	m_map = &map;
 
 	m_linesLeftView = LinesLeftView::create();
-	m_linesLeftView->setPosition(Vec2{ kLinesLeftViewLeftMargin, layerSize.height - kLinesLeftViewTopMargin });
+	m_linesLeftView->setPosition(Vec2{ 0, layerSize.height });
 	this->addChild(m_linesLeftView);
 
-	m_map = &map;
+	m_timeScoreView = TimeScoreView::create();
+	m_timeScoreView->setPosition(Vec2{ layerSize.width, layerSize.height });
+	m_timeScoreView->setEstimatedTime(m_map->getEstimatedSpentSeconds());
+	this->addChild(m_timeScoreView);
+
 	m_touchListener = EventListenerTouchOneByOne::create();
 	m_touchListener->onTouchBegan = [this](Touch *touch, Event *event) {
 		(void)touch;
@@ -96,7 +98,6 @@ void BoundariesLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelMap 
 	m_debugNode = DrawNode::create();
 	m_debugNode->setContentSize(layerSize);
 	addChild(m_debugNode, 1);
-APP_PLATFORM := android-16
 	for (const Rect &animal : m_map->getAnimalsRects())
 	{
 		m_debugNode->drawRect(animal.origin, animal.origin + size2vec(animal.size), kColorValidLine);
@@ -110,7 +111,9 @@ APP_PLATFORM := android-16
 
 void BoundariesLayer::update(float delta)
 {
-	m_linesLeftView->setLinesLeft(ScoreManager::getInstance().getLinesLeft());
+	ScoreManager &scoreManager = ScoreManager::getInstance();
+	m_linesLeftView->setLinesLeft(scoreManager.getLinesLeft());
+	m_timeScoreView->setScore(scoreManager.getScore());
 	Node::update(delta);
 }
 
@@ -184,12 +187,17 @@ void BoundariesLayer::finishRound()
 
 	if (m_status == GameStatus::Win)
 	{
-		RefPtr<Label> label = ViewsFactory::createLargeLabel("Game Over\nCongratulations, you won!");
+		auto event = CustomEvents::make(EVENT_WIN_ON_LEVEL, LevelEventData::create(m_map->getLevelId()));
+		getEventDispatcher()->dispatchEvent(event);
+
+		std::string text = "Game Over\nCongratulations, you won!\n"
+						   "Your score: " + std::to_string(ScoreManager::getInstance().getScore());
+		RefPtr<Label> label = ViewsFactory::createLargeLabel(text);
 		label->setPosition(Vec2{ 0.5f * size.x, 0.7f * size.y });
 		m_gameOverNode->addChild(label, 1);
 
 		RefPtr<ui::Button> finishBtn = ViewsFactory::createButton("Continue", [this] {
-			auto event = CustomEvents::make(EVENT_WIN_ON_LEVEL, LevelEventData::create(m_map->getLevelId()));
+			auto event = CustomEvents::make(EVENT_GO_NEXT_LEVEL, LevelEventData::create(m_map->getLevelId()));
 			getEventDispatcher()->dispatchEvent(event);
 		});
 		finishBtn->setPosition(Vec2{ 0.5f * size.x, 0.3f * size.y });
@@ -213,7 +221,7 @@ void BoundariesLayer::finishRound()
 		m_gameOverNode->addChild(label, 1);
 
 		RefPtr<ui::Button> finishBtn = ViewsFactory::createButton("Exit", [this] {
-			auto event = CustomEvents::make(EVENT_LOSE_ON_LEVEL, LevelEventData::create(m_map->getLevelId()));
+			auto event = CustomEvents::make(EVENT_EXIT_LEVEL, LevelEventData::create(m_map->getLevelId()));
 			getEventDispatcher()->dispatchEvent(event);
 		});
 		finishBtn->setPosition(Vec2{ 0.65f * size.x, 0.3f * size.y });

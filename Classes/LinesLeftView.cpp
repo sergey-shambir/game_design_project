@@ -5,6 +5,9 @@ using namespace cocos2d;
 
 namespace
 {
+constexpr float kViewTopMargin = 20;
+constexpr float kViewLeftMargin = 16;
+constexpr float kItemsPadding = 8;
 constexpr auto ICON_STAR = "res/icon_star.png";
 }
 
@@ -27,8 +30,8 @@ void LinesLeftView::setLinesLeft(unsigned count)
         for (unsigned  i = m_lines.size(); i < count; ++i)
         {
             auto sprite = sprite_utils::createSprite(ICON_STAR);
-            const Size size = sprite->getContentSize();
-            sprite->setPosition(Vec2{ i * size.width, 0 });
+			const Size itemSize = sprite->getContentSize();
+			sprite->setPosition(Vec2{ kViewLeftMargin + i * (itemSize.width + kItemsPadding), -kViewTopMargin });
 			sprite->setOpacity(0);
 			sprite->runAction(FadeIn::create(kFadeTimeSeconds));
             addChild(sprite);

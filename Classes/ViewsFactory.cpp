@@ -6,6 +6,11 @@ namespace
 {
 std::string getDefaultFontName()
 {
+	return "fonts/arial.ttf";
+}
+
+std::string getTitleFontName()
+{
 	return "fonts/Marker Felt.ttf";
 }
 
@@ -16,7 +21,7 @@ TTFConfig getMenuFont()
 
 TTFConfig getTitleFont()
 {
-	return TTFConfig{ getDefaultFontName(), 40 };
+	return TTFConfig{ getTitleFontName(), 40 };
 }
 
 float getMenuItemDistance()
