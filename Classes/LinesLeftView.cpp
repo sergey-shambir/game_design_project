@@ -8,7 +8,7 @@ namespace
 constexpr float kViewTopMargin = 20;
 constexpr float kViewLeftMargin = 16;
 constexpr float kItemsPadding = 8;
-constexpr auto ICON_STAR = "res/icon_star.png";
+constexpr auto ICON_LINES = "res/icon_line.png";
 }
 
 void LinesLeftView::setLinesLeft(unsigned count)
@@ -29,7 +29,7 @@ void LinesLeftView::setLinesLeft(unsigned count)
     {
         for (unsigned  i = m_lines.size(); i < count; ++i)
         {
-            auto sprite = sprite_utils::createSprite(ICON_STAR);
+			auto sprite = sprite_utils::createSprite(ICON_LINES);
 			const Size itemSize = sprite->getContentSize();
 			sprite->setPosition(Vec2{ kViewLeftMargin + i * (itemSize.width + kItemsPadding), -kViewTopMargin });
 			sprite->setOpacity(0);

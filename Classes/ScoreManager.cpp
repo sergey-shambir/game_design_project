@@ -1,6 +1,8 @@
 #include "ScoreManager.h"
 #include <cassert>
 #include <cmath>
+#include <algorithm>
+#include <utility>
 
 ScoreManager &ScoreManager::getInstance()
 {

@@ -80,7 +80,7 @@ std::string TimeScoreView::formatSecondsPassed() const
 	unsigned seconds = m_secondsLeft % 60;
 	unsigned minutes = m_secondsLeft / 60;
 	char timeStr[64] = { 0 };
-	snprintf(timeStr, std::size(timeStr), "%02d:%02d", minutes, seconds);
+	snprintf(timeStr, sizeof(timeStr) / sizeof(char), "%02d:%02d", minutes, seconds);
 
 	return std::string(kPrefix) + std::string(timeStr);
 }
