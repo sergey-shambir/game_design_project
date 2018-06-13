@@ -7,7 +7,7 @@ namespace
 {
 constexpr float kViewBorder = 3.0f;
 constexpr float kViewTopMargin = 8.0f;
-constexpr float kViewRightMargin = 8.0f;
+constexpr float kViewLeftMargin = 8.0f;
 constexpr float kItemsPadding = 8.0f;
 
 const Color4F kViewBackgroundColor = { 0.2f, 0.2f, 0.2f, 0.6f };
@@ -49,19 +49,26 @@ bool TimeScoreView::init()
 		m_scoreLabel = ViewsFactory::createLargeLabel(formatScore());
 		m_timeLeftLabel = ViewsFactory::createLargeLabel(formatSecondsPassed());
 
-		const Vec2 timeLeftPos = Vec2{ -kViewRightMargin, -kViewTopMargin };
+		const Size scoreSize = m_scoreLabel->getContentSize();
 		const Size timeLeftSize = m_timeLeftLabel->getContentSize();
-		const Vec2 scorePos = timeLeftPos - Vec2{ kItemsPadding + timeLeftSize.width, 0 };
+		const Size contentSize = Size{
+			2 * kViewLeftMargin + kItemsPadding + scoreSize.width + timeLeftSize.width,
+			2 * kViewTopMargin + (std::max)(scoreSize.height, timeLeftSize.height)
+		};
+		const Vec2 scorePos = Vec2{ kViewLeftMargin, kViewTopMargin + 0.5f * (contentSize.height - timeLeftSize.height) };
+		const Vec2 timePos = Vec2{
+			kViewLeftMargin + kItemsPadding + scoreSize.width,
+			kViewTopMargin + 0.5f * (contentSize.height - scoreSize.height)
+		};
 
-		m_timeLeftLabel->setAnchorPoint(Vec2{ 1, 1 });
-		m_timeLeftLabel->setPosition(timeLeftPos);
-		addChild(m_timeLeftLabel);
-
-		m_scoreLabel->setAnchorPoint(Vec2{ 1, 1 });
+		setContentSize(contentSize);
+		updateBackground();
+		m_scoreLabel->setAnchorPoint(Vec2{ 0.0f, 0.5f });
 		m_scoreLabel->setPosition(scorePos);
 		addChild(m_scoreLabel);
-
-		updateBackground();
+		m_timeLeftLabel->setAnchorPoint(Vec2{ 0.0f, 0.5f });
+		m_timeLeftLabel->setPosition(timePos);
+		addChild(m_timeLeftLabel);
 	}
 	catch (const std::exception &ex)
 	{
@@ -90,11 +97,13 @@ std::string TimeScoreView::formatSecondsPassed() const
 
 void TimeScoreView::updateBackground()
 {
-	Rect bgRect = m_timeLeftLabel->getBoundingBox().unionWithRect(m_scoreLabel->getBoundingBox());
+	Rect bgRect = Rect{ Vec2{ 0, 0 }, getContentSize() };
+	bgRect.size.width -= 2 * kViewLeftMargin;
+	bgRect.size.height -= 2 * kViewTopMargin;
 	bgRect.size.width += 2 * kViewBorder;
 	bgRect.size.height += 2 * kViewBorder;
-	bgRect.origin.x -= kViewBorder;
-	bgRect.origin.y -= kViewBorder;
+	bgRect.origin.x += kViewLeftMargin - kViewBorder;
+	bgRect.origin.y += kViewTopMargin - kViewBorder;
 	clear();
 	drawSolidRect(Vec2{ bgRect.getMinX(), bgRect.getMinY() }, Vec2{ bgRect.getMaxX(), bgRect.getMaxY() }, kViewBackgroundColor);
 }

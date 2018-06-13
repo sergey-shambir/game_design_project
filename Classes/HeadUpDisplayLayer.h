@@ -24,9 +24,11 @@ private:
 	void onExit() override;
 	void updateBoundary(cocos2d::Touch *touch);
 	void commitBoundary(cocos2d::Touch *touch);
+	void cancelLastBoundary();
 	void checkWinLose();
 	void finishRound();
 	void startLevel();
+	void redrawBoundaries();
 
 	bool isBoundaryValid(const Line &boundary);
 	bool doePlayerWin() const;

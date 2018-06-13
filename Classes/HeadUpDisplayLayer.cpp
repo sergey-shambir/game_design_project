@@ -48,14 +48,20 @@ void HeadUpDisplayLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelM
 	m_map = &map;
 	m_secondsLeft = m_map->getEstimatedSpentSeconds();
 
-	m_linesLeftView = LinesLeftView::create();
-	m_linesLeftView->setPosition(Vec2{ 0, layerSize.height });
-	this->addChild(m_linesLeftView);
-
 	m_timeScoreView = TimeScoreView::create();
+	m_timeScoreView->setAnchorPoint(Vec2{ 1, 1 });
 	m_timeScoreView->setPosition(Vec2{ layerSize.width, layerSize.height });
 	m_timeScoreView->setEstimatedTime(m_map->getEstimatedSpentSeconds());
 	this->addChild(m_timeScoreView);
+
+	m_linesLeftView = LinesLeftView::create(m_map->getBoundaryCount());
+	m_linesLeftView->setAnchorPoint(Vec2{ 1, 1 });
+	const Vec2 linesViewPos = Vec2{
+		layerSize.width - m_timeScoreView->getContentSize().width,
+		layerSize.height
+	};
+	m_linesLeftView->setPosition(linesViewPos);
+	this->addChild(m_linesLeftView);
 
 	m_touchListener = EventListenerTouchOneByOne::create();
 	m_touchListener->onTouchBegan = [this](Touch *touch, Event *event) {
@@ -189,15 +195,20 @@ void HeadUpDisplayLayer::commitBoundary(Touch *touch)
 	if (m_isNextBoundaryValid)
 	{
 		m_boundaries.push_back(m_nextBoundary);
-		Line visibleLine = m_nextBoundary.expandAB(Rect{ Vec2{ 0, 0 }, getContentSize() });
-		m_commitedLinesNode->drawLine(visibleLine.vertexA, visibleLine.vertexB, kColorCommitedLine);
-
+		redrawBoundaries();
 		ScoreManager::getInstance().updateAfterLinePut();
 		if (m_boundaries.size() >= m_map->getBoundaryCount())
 		{
 			checkWinLose();
 		}
 	}
+}
+
+void HeadUpDisplayLayer::cancelLastBoundary()
+{
+	m_boundaries.pop_back();
+	redrawBoundaries();
+	ScoreManager::getInstance().updateAfterLineCanceled();
 }
 
 void HeadUpDisplayLayer::checkWinLose()
@@ -239,6 +250,16 @@ void HeadUpDisplayLayer::startLevel()
 		}
 		m_status = GameStatus::Playing;
 		m_timeScoreView->scheduleUpdate();
+	}
+}
+
+void HeadUpDisplayLayer::redrawBoundaries()
+{
+	m_commitedLinesNode->clear();
+	for (const Line &line : m_boundaries)
+	{
+		Line visibleLine = line.expandAB(Rect{ Vec2{ 0, 0 }, getContentSize() });
+		m_commitedLinesNode->drawLine(visibleLine.vertexA, visibleLine.vertexB, kColorCommitedLine);
 	}
 }
 
