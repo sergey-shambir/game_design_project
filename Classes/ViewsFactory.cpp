@@ -7,7 +7,7 @@ namespace
 std::string getDefaultFontName()
 {
 #if 1
-	return "fonts/Marker Felt.ttf";
+	return "fonts/Neucha.ttf";
 #else
 	return "fonts/arial.ttf";
 #endif
@@ -15,7 +15,7 @@ std::string getDefaultFontName()
 
 std::string getTitleFontName()
 {
-	return "fonts/Marker Felt.ttf";
+	return getDefaultFontName();
 }
 
 TTFConfig getMenuFont()

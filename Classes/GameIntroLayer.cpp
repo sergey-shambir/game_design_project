@@ -1,6 +1,7 @@
 #include "GameIntroLayer.h"
 #include "CustomEvents.h"
 #include "ViewsFactory.h"
+#include "LocalizableStrings.h"
 
 using namespace cocos2d;
 
@@ -33,15 +34,12 @@ bool GameIntroLayer::init(const Size &contentSize, const std::string &levelId)
 		const Vec2 size{ contentSize.width, contentSize.height };
         this->drawSolidRect(Vec2{ 0, 0 }, size, kGameIntroSplashColor);
 
-        std::string text = "How to play:\n"
-                           "1) slide over screen to draw lines\n"
-						   "2) use lines to divide goats and plants\n"
-                           "3) be fast!";
+		std::string text = l10n::kGameIntro;
         RefPtr<Label> label = ViewsFactory::createLargeLabel(text);
 		label->setPosition(Vec2{ 0.5f * size.x, 0.6f * size.y });
         this->addChild(label, 1);
 
-        RefPtr<ui::Button> finishBtn = ViewsFactory::createButton("Got it!", [this, levelId] {
+		RefPtr<ui::Button> finishBtn = ViewsFactory::createButton(l10n::kGameIntroCloseButton, [this, levelId] {
             auto event = CustomEvents::make(EVENT_START_LEVEL, LevelEventData::create(levelId));
             getEventDispatcher()->dispatchEvent(event);
         });

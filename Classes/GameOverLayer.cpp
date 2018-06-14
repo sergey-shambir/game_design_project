@@ -2,6 +2,7 @@
 #include "CustomEvents.h"
 #include "ScoreManager.h"
 #include "ViewsFactory.h"
+#include "LocalizableStrings.h"
 #include <memory>
 
 using namespace cocos2d;
@@ -46,14 +47,12 @@ bool GameOverLayer::init(const Size& contentSize, IGameLevelMap& map, GameStatus
 			auto event = CustomEvents::make(EVENT_WIN_ON_LEVEL, LevelEventData::create(m_map->getLevelId()));
 			getEventDispatcher()->dispatchEvent(event);
 
-			std::string text = "Game Over\nCongratulations, you won!\n"
-							   "Your score: "
-				+ std::to_string(ScoreManager::getInstance().getScore());
+			std::string text = l10n::expandVariable(l10n::kGameOverWin, "{SCORE}", std::to_string(ScoreManager::getInstance().getScore()));
 			RefPtr<Label> label = ViewsFactory::createLargeLabel(text);
 			label->setPosition(Vec2{ 0.5f * size.x, 0.7f * size.y });
 			this->addChild(label, 1);
 
-			RefPtr<ui::Button> finishBtn = ViewsFactory::createButton("Continue", [this] {
+			RefPtr<ui::Button> finishBtn = ViewsFactory::createButton(l10n::kButtonContinue, [this] {
 				auto event = CustomEvents::make(EVENT_GO_NEXT_LEVEL, LevelEventData::create(m_map->getLevelId()));
 				getEventDispatcher()->dispatchEvent(event);
 			});
@@ -76,18 +75,18 @@ bool GameOverLayer::init(const Size& contentSize, IGameLevelMap& map, GameStatus
 			auto event = CustomEvents::make(EVENT_LOSE_ON_LEVEL, LevelEventData::create(m_map->getLevelId()));
 			getEventDispatcher()->dispatchEvent(event);
 
-			RefPtr<Label> label = ViewsFactory::createLargeLabel("Game Over\nUnfortunately, you lose...");
+			RefPtr<Label> label = ViewsFactory::createLargeLabel(l10n::kGameOverLose);
 			label->setPosition(Vec2{ 0.5f * size.x, 0.5f * size.y });
 			this->addChild(label, 1);
 
-			RefPtr<ui::Button> finishBtn = ViewsFactory::createButton("Exit", [this] {
+			RefPtr<ui::Button> finishBtn = ViewsFactory::createButton(l10n::kButtonExit, [this] {
 				auto event = CustomEvents::make(EVENT_EXIT_LEVEL, LevelEventData::create(m_map->getLevelId()));
 				getEventDispatcher()->dispatchEvent(event);
 			});
 			finishBtn->setPosition(Vec2{ 0.65f * size.x, 0.3f * size.y });
 			this->addChild(finishBtn, 2);
 
-			RefPtr<ui::Button> retryBtn = ViewsFactory::createButton("Retry", [this] {
+			RefPtr<ui::Button> retryBtn = ViewsFactory::createButton(l10n::kButtonRetry, [this] {
 				auto event = CustomEvents::make(EVENT_RETRY_LEVEL, LevelEventData::create(m_map->getLevelId()));
 				getEventDispatcher()->dispatchEvent(event);
 			});

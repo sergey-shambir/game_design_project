@@ -4,6 +4,7 @@
 #include "ViewsFactory.h"
 #include "ScoreManager.h"
 #include "SpriteUtils.h"
+#include "LocalizableStrings.h"
 
 using namespace cocos2d;
 
@@ -25,13 +26,11 @@ void WelcomeScene::initBackground()
 	auto background = ViewsFactory::createColoredLayer(Color4B{ 15, 90, 50, 255 }, sceneSize);
 	this->addChild(background, 0);
 
-	auto authors = ViewsFactory::createLargeLabel(
-		"Ivan Uskov, Sergey Stepanenko and Sergey Shambir\n"
-		"proudly present...");
+	auto authors = ViewsFactory::createLargeLabel(l10n::kGameAuthors);
 	authors->setPosition(Vec2{ 0.5f * sceneSize.width, 0.85f * sceneSize.height });
 	this->addChild(authors, 0);
 
-	auto title = ViewsFactory::createTitleLabel("Stop the Goats!");
+	auto title = ViewsFactory::createTitleLabel(l10n::kGameTitle);
 	title->setPosition(Vec2{ 0.5f * sceneSize.width, 0.7f * sceneSize.height });
 	this->addChild(title, 0);
 
@@ -45,7 +44,7 @@ void WelcomeScene::initMenu()
 {
 	const Size sceneSize = getContentSize();
 
-	auto level1Button = ViewsFactory::createButton("Play Now!", []() {
+	auto level1Button = ViewsFactory::createButton(l10n::kPlayNow, []() {
 		ScoreManager::getInstance().updateBeforeFirstLevel();
 		auto scene = GameLevelScene::createScene(GAME_LEVEL1_ID);
 		Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
@@ -53,7 +52,7 @@ void WelcomeScene::initMenu()
 	level1Button->setPosition(Vec2{ 0.7f * sceneSize.width, 0.5f * sceneSize.height });
 	this->addChild(level1Button, 0);
 
-	auto closeButton = ViewsFactory::createButton("Quit", []() {
+	auto closeButton = ViewsFactory::createButton(l10n::kButtonQuit, []() {
 		// Close the cocos2d-x game scene and quit the application
 		Director::getInstance()->end();
 	});
