@@ -11,6 +11,8 @@ public:
 
 	static cocos2d::RefPtr<cocos2d::Label> createLargeLabel(const std::string &textUtf8);
 
+	static cocos2d::RefPtr<cocos2d::Label> createIndicatorLabel(const std::string &textUtf8);
+
 	static cocos2d::RefPtr<cocos2d::Label> createTitleLabel(const std::string &textUtf8);
 
 	static cocos2d::RefPtr<cocos2d::MenuItemLabel> createMenuItemLabel(const std::string &textUtf8, const cocos2d::ccMenuCallback &cb);

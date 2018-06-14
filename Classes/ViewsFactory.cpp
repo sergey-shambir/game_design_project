@@ -6,7 +6,11 @@ namespace
 {
 std::string getDefaultFontName()
 {
+#if 1
+	return "fonts/Marker Felt.ttf";
+#else
 	return "fonts/arial.ttf";
+#endif
 }
 
 std::string getTitleFontName()
@@ -16,12 +20,22 @@ std::string getTitleFontName()
 
 TTFConfig getMenuFont()
 {
-	return TTFConfig{ getDefaultFontName(), 16 };
+	return TTFConfig{ getDefaultFontName(), 20 };
+}
+
+TTFConfig getIndicatorFont()
+{
+	return TTFConfig{ getDefaultFontName(), 28 };
 }
 
 TTFConfig getTitleFont()
 {
 	return TTFConfig{ getTitleFontName(), 40 };
+}
+
+Color3B getButtonTextColor()
+{
+	return Color3B(51, 51, 51);
 }
 
 float getMenuItemDistance()
@@ -31,7 +45,7 @@ float getMenuItemDistance()
 
 int getButtonFontSize()
 {
-	return 14;
+	return 36;
 }
 
 cocos2d::RefPtr<Label> createLabel(const std::string &textUtf8, const TTFConfig &font)
@@ -48,6 +62,14 @@ cocos2d::RefPtr<Label> createLabel(const std::string &textUtf8, const TTFConfig 
 cocos2d::RefPtr<Label> ViewsFactory::createLargeLabel(const std::string &textUtf8)
 {
 	return createLabel(textUtf8, getMenuFont());
+}
+
+cocos2d::RefPtr<Label> ViewsFactory::createIndicatorLabel(const std::string &textUtf8)
+{
+	const Color3B color = getButtonTextColor();
+	auto label = createLabel(textUtf8, getIndicatorFont());
+	label->setTextColor(Color4B{ color.r, color.g, color.b, 255 });
+	return label;
 }
 
 cocos2d::RefPtr<Label> ViewsFactory::createTitleLabel(const std::string &textUtf8)
@@ -95,6 +117,7 @@ RefPtr<ui::Button> ViewsFactory::createButton(const std::string &title, const st
 	}
 
 	button->setTitleText(title);
+	button->setTitleColor(getButtonTextColor());
 	button->setTitleFontName(getDefaultFontName());
 	button->setTitleFontSize(getButtonFontSize());
 	button->addClickEventListener([onClick](Ref *sender) {

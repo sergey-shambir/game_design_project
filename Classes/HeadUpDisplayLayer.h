@@ -6,7 +6,8 @@
 #include "IGameLevelMap.h"
 #include "Line.h"
 #include "LinesLeftView.h"
-#include "TimeScoreView.h"
+#include "TimeLeftView.h"
+#include "ScoreView.h"
 
 class HeadUpDisplayLayer : public cocos2d::Node
 {
@@ -41,7 +42,8 @@ private:
 	cocos2d::RefPtr<GameIntroLayer> m_gameIntroNode;
 	cocos2d::RefPtr<cocos2d::DrawNode> m_debugNode;
 	cocos2d::RefPtr<LinesLeftView> m_linesLeftView;
-	cocos2d::RefPtr<TimeScoreView> m_timeScoreView;
+	cocos2d::RefPtr<TimeLeftView> m_timeLeftView;
+	cocos2d::RefPtr<ScoreView> m_scoreView;
 
 	Line m_nextBoundary;
 	bool m_isNextBoundaryValid = false;

@@ -40,6 +40,15 @@ void GameLevelScene::tryInit()
 			}
 		}
 	}));
+	m_listeners.emplace_back(EventListenerCustom::create(EVENT_LOSE_ON_LEVEL, [this](EventCustom *event) {
+		if (LevelEventData *data = CustomEvents::get<LevelEventData>(event))
+		{
+			if (data->getLevelId() == m_levelId)
+			{
+				ScoreManager::getInstance().updateAfterRoundLose();
+			}
+		}
+	}));
 	m_listeners.emplace_back(EventListenerCustom::create(EVENT_GO_NEXT_LEVEL, [this](EventCustom *event) {
 		if (LevelEventData *data = CustomEvents::get<LevelEventData>(event))
 		{
@@ -92,7 +101,7 @@ void GameLevelScene::reportWin()
 {
 	RoundResults results;
 	results.linesSpent = m_hud->getLinesSpent();
-	results.secondsSpent = m_hud->getSecondsLeft();
+	results.secondsLeft = m_hud->getSecondsLeft();
 	ScoreManager::getInstance().updateAfterRoundWin(getRoundConditions(), results);
 }
 

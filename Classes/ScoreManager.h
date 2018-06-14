@@ -8,7 +8,7 @@ struct RoundConditions
 
 struct RoundResults
 {
-	float secondsSpent = 0.0f; // seconds spent on scene.
+	float secondsLeft = 0.0f; // seconds spent on scene.
 	unsigned linesSpent = 0;
 };
 
@@ -28,6 +28,7 @@ public:
 	void updateBeforeFirstLevel();
 	void updateBeforeRoundStart(const RoundConditions &conditions);
 	void updateAfterRoundWin(const RoundConditions &conditions, const RoundResults &results);
+	void updateAfterRoundLose();
 
 private:
 	unsigned getGainedScore(const RoundConditions &conditions, const RoundResults &results) const;

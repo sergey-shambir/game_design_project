@@ -22,7 +22,8 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/Line.cpp \
                    $(LOCAL_PATH)/../../../Classes/SpriteUtils.cpp \
                    $(LOCAL_PATH)/../../../Classes/LinesLeftView.cpp \
-                   $(LOCAL_PATH)/../../../Classes/TimeScoreView.cpp \
+                   $(LOCAL_PATH)/../../../Classes/TimeLeftView.cpp \
+                   $(LOCAL_PATH)/../../../Classes/ScoreView.cpp \
                    $(LOCAL_PATH)/../../../Classes/GameOverLayer.cpp \
                    $(LOCAL_PATH)/../../../Classes/GameIntroLayer.cpp \
                    $(LOCAL_PATH)/../../../Classes/ViewsFactory.cpp \

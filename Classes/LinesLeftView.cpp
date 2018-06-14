@@ -7,12 +7,12 @@ using namespace cocos2d;
 namespace
 {
 constexpr float kViewTopMargin = 4;
-constexpr float kViewLeftMargin = 8;
-constexpr float kItemsPadding = 8;
-constexpr auto ICON_LINES = "res/icon_line.png";
+constexpr float kViewLeftMargin = 4;
+constexpr auto kIndicatorBgImage = "res/boundary-indicator-bg.png";
+const Vec2 kLabelPosition = Vec2{ 100, 30 };
 } // namespace
 
-LinesLeftView*LinesLeftView::create(unsigned linesTotal)
+LinesLeftView *LinesLeftView::create(unsigned linesTotal)
 {
 	RefPtr<LinesLeftView> self = new (std::nothrow) LinesLeftView;
 	if (self && self->initWithLines(linesTotal))
@@ -25,7 +25,7 @@ LinesLeftView*LinesLeftView::create(unsigned linesTotal)
 
 void LinesLeftView::setLinesLeft(unsigned count)
 {
-	const std::string text = std::to_string(count) + "/" + std::to_string(m_linesTotal);
+	const std::string text = "x" + std::to_string(count);
 	m_lineCount->setString(text);
 }
 
@@ -39,29 +39,20 @@ bool LinesLeftView::initWithLines(unsigned linesTotal)
 	{
 		m_linesTotal = linesTotal;
 
-		const std::string totalStr = std::to_string(linesTotal);
-		const std::string maxLenStr = totalStr + "/" + totalStr;
-		const std::string startStr = "0/" + totalStr;
-		m_lineIcon = sprite_utils::createSprite(ICON_LINES);
-		m_lineCount = ViewsFactory::createLargeLabel(maxLenStr);
+		const std::string text = "x" + std::to_string(linesTotal);
+		m_indicatorBg = sprite_utils::createSprite(kIndicatorBgImage);
+		m_lineCount = ViewsFactory::createIndicatorLabel(text);
 
-		const Size iconSize = m_lineIcon->getContentSize();
-		const Size textSize = m_lineCount->getContentSize();
-		const Size contentSize = Size{
-			2 * kViewLeftMargin + kItemsPadding + iconSize.width + textSize.width,
-			2 * kViewTopMargin + (std::max)(iconSize.height, textSize.height)
-		};
-		setContentSize(contentSize);
+		const Size bgSize = m_indicatorBg->getContentSize();
+		const Size contentSize = { 2 * kViewLeftMargin + bgSize.width, 2 * kViewTopMargin + bgSize.height };
+		setContentSize(bgSize);
 
-		const Vec2 iconPos = Vec2{ kViewLeftMargin, 0.5f * contentSize.height };
-		const Vec2 textPos = Vec2{ kViewLeftMargin + kItemsPadding + iconSize.width, 0.5f * contentSize.height };
-		m_lineIcon->setPosition(iconPos);
-		m_lineIcon->setAnchorPoint(Vec2{ 0.0f, 0.5f });
-		m_lineCount->setPosition(textPos);
-		m_lineCount->setAnchorPoint(Vec2{ 0.0f, 0.5f });
-		m_lineCount->setString(startStr);
+		m_indicatorBg->setPosition(Vec2{ kViewLeftMargin, -kViewTopMargin });
+		m_indicatorBg->setAnchorPoint(Vec2{ 0, 0 });
+		this->addChild(m_indicatorBg);
 
-		this->addChild(m_lineIcon);
+		m_lineCount->setPosition(kLabelPosition + Vec2{ kViewLeftMargin, -kViewTopMargin });
+		m_lineCount->setAnchorPoint(Vec2{ 0.5f, 0.5f });
 		this->addChild(m_lineCount);
 	}
 	catch (const std::exception &ex)

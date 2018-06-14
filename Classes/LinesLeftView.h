@@ -13,6 +13,6 @@ private:
 	bool initWithLines(unsigned linesTotal);
 
 	unsigned m_linesTotal = 0;
-	cocos2d::RefPtr<cocos2d::Sprite> m_lineIcon;
+	cocos2d::RefPtr<cocos2d::Sprite> m_indicatorBg;
 	cocos2d::RefPtr<cocos2d::Label> m_lineCount;
 };

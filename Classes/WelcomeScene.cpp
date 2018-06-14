@@ -50,13 +50,13 @@ void WelcomeScene::initMenu()
 		auto scene = GameLevelScene::createScene(GAME_LEVEL1_ID);
 		Director::getInstance()->pushScene(TransitionFade::create(0.5f, scene));
 	});
-	level1Button->setPosition(Vec2{ 0.7f * sceneSize.width, 0.45f * sceneSize.height });
+	level1Button->setPosition(Vec2{ 0.7f * sceneSize.width, 0.5f * sceneSize.height });
 	this->addChild(level1Button, 0);
 
 	auto closeButton = ViewsFactory::createButton("Quit", []() {
 		// Close the cocos2d-x game scene and quit the application
 		Director::getInstance()->end();
 	});
-	closeButton->setPosition(Vec2{ 0.7f * sceneSize.width, 0.35f * sceneSize.height });
+	closeButton->setPosition(Vec2{ 0.7f * sceneSize.width, 0.3f * sceneSize.height });
 	this->addChild(closeButton, 0);
 }

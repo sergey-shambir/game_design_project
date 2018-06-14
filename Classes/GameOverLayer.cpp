@@ -73,6 +73,9 @@ bool GameOverLayer::init(const Size& contentSize, IGameLevelMap& map, GameStatus
 		}
 		else
 		{
+			auto event = CustomEvents::make(EVENT_LOSE_ON_LEVEL, LevelEventData::create(m_map->getLevelId()));
+			getEventDispatcher()->dispatchEvent(event);
+
 			RefPtr<Label> label = ViewsFactory::createLargeLabel("Game Over\nUnfortunately, you lose...");
 			label->setPosition(Vec2{ 0.5f * size.x, 0.5f * size.y });
 			this->addChild(label, 1);

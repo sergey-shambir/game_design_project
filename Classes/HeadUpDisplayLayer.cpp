@@ -7,9 +7,19 @@ using namespace cocos2d;
 
 namespace
 {
+enum zIndex : int
+{
+	zIndexCommitedLines = 1,
+	zIndexNewLine,
+	zIndexIndicators,
+	zIndexOverlay,
+};
+
 constexpr unsigned kTouchListenerPriority = 1;
 const float kMinTouchSlideLength = 30.0f;
-const float kLineWidth = 20.f;
+const float kLineWidth = 20.0f;
+const float kTimeBarHeight = 30.0f;
+const float kTimeBarTopMargin = 20.0f;
 
 const cocos2d::Color4F kColorCommitedLine = { 0.2f, 0.2f, 0.5f, 1.0f };
 const cocos2d::Color4F kColorValidLine = { 0.3f, 0.7f, 1.0f, 0.5f };
@@ -48,20 +58,25 @@ void HeadUpDisplayLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelM
 	m_map = &map;
 	m_secondsLeft = m_map->getEstimatedSpentSeconds();
 
-	m_timeScoreView = TimeScoreView::create();
-	m_timeScoreView->setAnchorPoint(Vec2{ 1, 1 });
-	m_timeScoreView->setPosition(Vec2{ layerSize.width, layerSize.height });
-	m_timeScoreView->setEstimatedTime(m_map->getEstimatedSpentSeconds());
-	this->addChild(m_timeScoreView);
-
 	m_linesLeftView = LinesLeftView::create(m_map->getBoundaryCount());
-	m_linesLeftView->setAnchorPoint(Vec2{ 1, 1 });
-	const Vec2 linesViewPos = Vec2{
-		layerSize.width - m_timeScoreView->getContentSize().width,
-		layerSize.height
-	};
-	m_linesLeftView->setPosition(linesViewPos);
-	this->addChild(m_linesLeftView);
+	m_linesLeftView->setAnchorPoint(Vec2{ 0, 1 });
+	m_linesLeftView->setPosition(Vec2{ 0, layerSize.height });
+	this->addChild(m_linesLeftView, zIndexIndicators);
+
+	m_scoreView = ScoreView::create();
+	m_scoreView->setAnchorPoint(Vec2{ 1, 1 });
+	m_scoreView->setPosition(Vec2{ layerSize.width, layerSize.height });
+	this->addChild(m_scoreView, zIndexIndicators);
+
+	const Rect linesLeftBox = m_linesLeftView->getBoundingBox();
+	const Rect scoreBox = m_scoreView->getBoundingBox();
+	const Size timeBarSize = { scoreBox.getMinX() - linesLeftBox.getMaxX(), kTimeBarHeight };
+
+	m_timeLeftView = TimeLeftView::create(timeBarSize);
+	m_timeLeftView->setPosition(Vec2{ linesLeftBox.getMaxX(), layerSize.height - kTimeBarTopMargin });
+	m_timeLeftView->setAnchorPoint(Vec2{ 0, 1 });
+	m_timeLeftView->setEstimatedTime(m_map->getEstimatedSpentSeconds());
+	this->addChild(m_timeLeftView, zIndexIndicators);
 
 	m_touchListener = EventListenerTouchOneByOne::create();
 	m_touchListener->onTouchBegan = [this](Touch *touch, Event *event) {
@@ -89,12 +104,12 @@ void HeadUpDisplayLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelM
 	m_tempLineNode = DrawNode::create();
 	m_tempLineNode->setContentSize(layerSize);
 	m_tempLineNode->setLineWidth(kLineWidth);
-	addChild(m_tempLineNode, 3);
+	addChild(m_tempLineNode, zIndexNewLine);
 
 	m_commitedLinesNode = DrawNode::create();
 	m_commitedLinesNode->setContentSize(layerSize);
 	m_commitedLinesNode->setLineWidth(kLineWidth);
-	addChild(m_commitedLinesNode, 2);
+	addChild(m_commitedLinesNode, zIndexCommitedLines);
 
 	if (!ScoreManager::getInstance().didShowIntro())
 	{
@@ -111,7 +126,7 @@ void HeadUpDisplayLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelM
 		});
 
 		m_gameIntroNode = GameIntroLayer::create(getContentSize(), m_map->getLevelId());
-		addChild(m_gameIntroNode, 5);
+		addChild(m_gameIntroNode, zIndexOverlay);
 	}
 	else
 	{
@@ -121,7 +136,7 @@ void HeadUpDisplayLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelM
 #if 0
 	m_debugNode = DrawNode::create();
 	m_debugNode->setContentSize(layerSize);
-	addChild(m_debugNode, 1);
+	addChild(m_debugNode, zIndexOverlay);
 	for (const Rect &animal : m_map->getAnimalsRects())
 	{
 		m_debugNode->drawRect(animal.origin, animal.origin + size2vec(animal.size), kColorValidLine);
@@ -146,8 +161,8 @@ void HeadUpDisplayLayer::update(float delta)
 	}
 	ScoreManager &scoreManager = ScoreManager::getInstance();
 	m_linesLeftView->setLinesLeft(scoreManager.getLinesLeft());
-	m_timeScoreView->setScore(scoreManager.getScore());
-	m_timeScoreView->setSecondsLeft(static_cast<unsigned>(std::round(m_secondsLeft)));
+	m_scoreView->setScore(scoreManager.getScore());
+	m_timeLeftView->setSecondsLeft(m_secondsLeft);
 	Node::update(delta);
 }
 
@@ -231,7 +246,7 @@ void HeadUpDisplayLayer::finishRound()
 
 	getEventDispatcher()->removeEventListener(m_touchListener);
 	m_gameOverNode = GameOverLayer::create(getContentSize(), *m_map, m_status);
-	addChild(m_gameOverNode, 5);
+	addChild(m_gameOverNode, zIndexOverlay);
 }
 
 void HeadUpDisplayLayer::startLevel()
@@ -249,13 +264,14 @@ void HeadUpDisplayLayer::startLevel()
 			getEventDispatcher()->removeEventListener(m_startListener);
 		}
 		m_status = GameStatus::Playing;
-		m_timeScoreView->scheduleUpdate();
+		m_timeLeftView->scheduleUpdate();
 	}
 }
 
 void HeadUpDisplayLayer::redrawBoundaries()
 {
 	m_commitedLinesNode->clear();
+	m_commitedLinesNode->setLineWidth(kLineWidth);
 	for (const Line &line : m_boundaries)
 	{
 		Line visibleLine = line.expandAB(Rect{ Vec2{ 0, 0 }, getContentSize() });
