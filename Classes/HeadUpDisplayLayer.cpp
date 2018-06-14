@@ -24,6 +24,11 @@ const float kTimeBarTopMargin = 20.0f;
 const cocos2d::Color4F kColorCommitedLine = { 0.2f, 0.2f, 0.5f, 1.0f };
 const cocos2d::Color4F kColorValidLine = { 0.3f, 0.7f, 1.0f, 0.5f };
 const cocos2d::Color4F kColorInvalidLine = { 1.0f, 0.2f, 0.2f, 0.5f };
+
+float getScaledLineWidth()
+{
+	return Director::getInstance()->getContentScaleFactor() * kLineWidth;
+}
 } // namespace
 
 HeadUpDisplayLayer *HeadUpDisplayLayer::create(const cocos2d::Size &layerSize, IGameLevelMap &map)
@@ -103,12 +108,12 @@ void HeadUpDisplayLayer::initWithMap(const cocos2d::Size &layerSize, IGameLevelM
 
 	m_tempLineNode = DrawNode::create();
 	m_tempLineNode->setContentSize(layerSize);
-	m_tempLineNode->setLineWidth(kLineWidth);
+	m_tempLineNode->setLineWidth(getScaledLineWidth());
 	addChild(m_tempLineNode, zIndexNewLine);
 
 	m_commitedLinesNode = DrawNode::create();
 	m_commitedLinesNode->setContentSize(layerSize);
-	m_commitedLinesNode->setLineWidth(kLineWidth);
+	m_commitedLinesNode->setLineWidth(getScaledLineWidth());
 	addChild(m_commitedLinesNode, zIndexCommitedLines);
 
 	if (!ScoreManager::getInstance().didShowIntro())
@@ -195,7 +200,7 @@ void HeadUpDisplayLayer::updateBoundary(Touch *touch)
 	m_isNextBoundaryValid = isBoundaryValid(m_nextBoundary);
 
 	m_tempLineNode->clear();
-	m_tempLineNode->setLineWidth(kLineWidth);
+	m_tempLineNode->setLineWidth(getScaledLineWidth());
 	if (m_nextBoundary.getDistanceAB() >= kMinTouchSlideLength)
 	{
 		Color4F color = m_isNextBoundaryValid ? kColorValidLine : kColorInvalidLine;
@@ -271,7 +276,7 @@ void HeadUpDisplayLayer::startLevel()
 void HeadUpDisplayLayer::redrawBoundaries()
 {
 	m_commitedLinesNode->clear();
-	m_commitedLinesNode->setLineWidth(kLineWidth);
+	m_commitedLinesNode->setLineWidth(getScaledLineWidth());
 	for (const Line &line : m_boundaries)
 	{
 		Line visibleLine = line.expandAB(Rect{ Vec2{ 0, 0 }, getContentSize() });

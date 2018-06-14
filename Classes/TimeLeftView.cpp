@@ -7,10 +7,15 @@ namespace
 {
 constexpr float kPi = 3.14159265359f;
 constexpr float kBorderRadius = 6.0f;
-constexpr float kBorderWidth = 4.0f;
+constexpr float kBorderWidth = 3.0f;
 const Vec2 kMargins = { 8.0f, 6.0f };
 const Color4F kFillColor = { 1.0f, 0.86f, 0.39f, 1.0f };
 const Color4F kBorderColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+float getBorderLineWidth()
+{
+	return Director::getInstance()->getContentScaleFactor() * kBorderWidth;
+}
 
 Rect deflateRect(const Rect &value, const Vec2 &delta)
 {
@@ -113,14 +118,18 @@ void TimeLeftView::redraw()
 	const float borderRadius = (std::min)(kBorderRadius, 0.5f * getContentSize().height);
 	const Size contentSize = getContentSize();
 	const Rect drawRect = deflateRect(Rect{ Vec2{ 0, 0 }, contentSize }, kMargins);
+
+	// Crop fill rect from the left.
+	const float widthDelta = drawRect.size.width * (1.0f - m_secondsLeft / m_estimatedTime);
 	Rect fillRect = drawRect;
-	fillRect.size.width *= m_secondsLeft / m_estimatedTime;
+	fillRect.origin.x += widthDelta;
+	fillRect.size.width -= widthDelta;
 
 	const std::vector<Vec2> strokePath = polygonizeRoundRect(drawRect, borderRadius);
 	const std::vector<Vec2> fillPath = cropPath(strokePath, fillRect);
 
 	clear();
-	setLineWidth(kBorderWidth);
+	setLineWidth(getBorderLineWidth());
 	drawSolidPoly(fillPath.data(), static_cast<unsigned>(fillPath.size()), kFillColor);
 	drawPoly(strokePath.data(), static_cast<unsigned>(strokePath.size()), true, kBorderColor);
 }
